@@ -1,9 +1,18 @@
-import Image from "next/image";
+import Sidebar from "./components/sidebar/page";
+import Main from "./components/main/page";
 
 export default function Home() {
   return (
     <>
-      <h1 className="text-4xl align-center justify-center font-bold">PAINEL DO SITE</h1>
+      <div className="flex">
+        <div className="flex-1/12">
+          <Sidebar />
+        </div>
+
+        <div className="flex-10/12">
+          <Main />
+        </div>
+      </div>
     </>
   );
 }
