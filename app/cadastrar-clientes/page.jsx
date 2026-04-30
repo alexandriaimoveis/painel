@@ -1,4 +1,4 @@
-import Sidebar from "./components/sidebar/page";
+import Sidebar from "../components/sidebar/page";
 
 export default function CadastrarClientes() {
   return (
