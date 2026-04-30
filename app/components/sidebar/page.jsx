@@ -12,17 +12,17 @@ export default function Sidebar() {
           </Link>
         </li>
         <li>
-          <Link href="/pages/cadastrar-imovel" className="flex items-center p-2 hover:bg-gray-700 rounded">
+          <Link href="/cadastrar-imovel" className="flex items-center p-2 hover:bg-gray-700 rounded">
             <span>Cadastrar Imóvel</span>
           </Link>
         </li>
         <li>
-          <Link href="/pages/cadastrar-clientes" className="flex items-center p-2 hover:bg-gray-700 rounded">
+          <Link href="/cadastrar-clientes" className="flex items-center p-2 hover:bg-gray-700 rounded">
             <span>Cadastrar Clientes</span>
           </Link>
         </li>
         <li>
-          <Link href="/pages/perfil" className="flex items-center p-2 hover:bg-gray-700 rounded">
+          <Link href="/perfil" className="flex items-center p-2 hover:bg-gray-700 rounded">
             <span>Perfil</span>
           </Link>
         </li>
