@@ -82,18 +82,148 @@ export default function NovoImovelPage() {
     loadCorretores()
   }, [])
 
-  const diferenciais = useMemo(() => ([
+  const diferenciaisCondominio = useMemo(() => ([
+    { key: 'adega', label: 'Adega' },
+    { key: 'almoxarifado', label: 'Almoxarifado' },
+    { key: 'ar_condicionado', label: 'Ar Condicionado' },
+    { key: 'area_estar_externa', label: 'Área de Estar Externa' },
+    { key: 'area_lazer', label: 'Área de Lazer' },
+    { key: 'area_verde', label: 'Área Verde' },
+    { key: 'atelier', label: 'Atelier' },
+    { key: 'bar', label: 'Bar' },
+    { key: 'biblioteca', label: 'Biblioteca' },
+    { key: 'bicicletario', label: 'Bicicletário' },
+    { key: 'boliche', label: 'Boliche' },
+    { key: 'brinquedoteca', label: 'Brinquedoteca' },
+    { key: 'campo_de_futebol', label: 'Campo de Futebol' },
+    { key: 'canil', label: 'Canil' },
+    { key: 'centro_de_estetica', label: 'Centro de Estética' },
+    { key: 'cerca_eletrica', label: 'Cerca Elétrica' },
+    { key: 'churrasqueira_gourmet', label: 'Churrasqueira Gourmet' },
+    { key: 'clube', label: 'Clube' },
+    { key: 'coffee_shop', label: 'Coffee Shop' },
+    { key: 'cozinha_americana', label: 'Cozinha Americana' },
+    { key: 'cozinha_gourmet', label: 'Cozinha Gourmet' },
+    { key: 'ducha', label: 'Ducha' },
+    { key: 'elevador', label: 'Elevador' },
+    { key: 'espaco_gourmet', label: 'Espaço Gourmet' },
+    { key: 'estacionamento', label: 'Estacionamento' },
+    { key: 'estacionamento_coberto', label: 'Estacionamento Coberto' },
+    { key: 'garagem', label: 'Garagem' },
+    { key: 'garagem_coberta', label: 'Garagem Coberta' },
+    { key: 'hidromassagem', label: 'Hidromassagem' },
+    { key: 'home_office', label: 'Home Office' },
+    { key: 'horta', label: 'Horta' },
+    { key: 'internet', label: 'Internet' },
+    { key: 'jardim', label: 'Jardim' },
+    { key: 'lavanderia', label: 'Lavanderia' },
+    { key: 'lavanderia_coletiva', label: 'Lavanderia Coletiva' },
+    { key: 'lounge', label: 'Lounge' },
+    { key: 'massagem', label: 'Massagem' },
+    { key: 'ofuro', label: 'Ofurô' },
+    { key: 'parque', label: 'Parque' },
+    { key: 'patio', label: 'Pátio' },
+    { key: 'permite_animais', label: 'Permite Animais' },
+    { key: 'pet_place', label: 'Pet Place' },
+    { key: 'pier', label: 'Píer' },
     { key: 'piscina', label: 'Piscina' },
-    { key: 'churrasqueira', label: 'Churrasqueira' },
-    { key: 'varanda', label: 'Varanda' },
-    { key: 'academia', label: 'Academia' },
-    { key: 'salao_festas', label: 'Salão de Festas' },
-    { key: 'portaria_24h', label: 'Portaria 24h' },
-    { key: 'area_servico', label: 'Área de Serviço' },
-    { key: 'mobiliado', label: 'Mobiliado' },
-    { key: 'semi_mobiliado', label: 'Semi-Mobiliado' },
-    { key: 'aceita_pets', label: 'Aceita Pets' },
+    { key: 'piscina_adulto', label: 'Piscina Adulto' },
+    { key: 'piscina_aquecida', label: 'Piscina Aquecida' },
+    { key: 'piscina_climatizada', label: 'Piscina Climatizada' },
+    { key: 'piscina_coberta', label: 'Piscina Coberta' },
+    { key: 'piscina_coberta_climatizada', label: 'Piscina Coberta Climatizada' },
+    { key: 'piscina_coberta_com_raia', label: 'Piscina Coberta com Raia' },
+    { key: 'piscina_com_hidromassagem', label: 'Piscina com Hidromassagem' },
+    { key: 'piscina_com_raia', label: 'Piscina com Raia' },
+    { key: 'piscina_infantil', label: 'Piscina Infantil' },
+    { key: 'pista_de_atletismo', label: 'Pista de Atletismo' },
+    { key: 'pista_de_bicicross', label: 'Pista de Bicicross' },
+    { key: 'pista_de_caminhada', label: 'Pista de Caminhada' },
   ]), [])
+
+  const diferenciaisUnidade = useMemo(() => ([
+  { key: 'academia', label: 'Academia' },
+  { key: 'alarme', label: 'Alarme' },
+  { key: 'aquecedor', label: 'Aquecedor' },
+  { key: 'aquecimento', label: 'Aquecimento' },
+  { key: 'aquecimento_a_gas', label: 'Aquecimento a Gás' },
+  { key: 'ar_condicionado', label: 'Ar Condicionado' },
+  { key: 'area_de_servico', label: 'Área de Serviço' },
+  { key: 'arm_cozinha', label: 'Arm.cozinha' },
+  { key: 'arm_embutido', label: 'Arm.embutido' },
+  { key: 'banheira', label: 'Banheira' },
+  { key: 'bar', label: 'Bar' },
+  { key: 'biblioteca', label: 'Biblioteca' },
+  { key: 'carpete', label: 'Carpete' },
+  { key: 'casa_de_caseiro', label: 'Casa de Caseiro' },
+  { key: 'casa_de_fundo', label: 'Casa de Fundo' },
+  { key: 'cerca', label: 'Cerca' },
+  { key: 'churrasqueira', label: 'Churrasqueira' },
+  { key: 'closet', label: 'Closet' },
+  { key: 'copa', label: 'Copa' },
+  { key: 'cozinha', label: 'Cozinha' },
+  { key: 'cozinha_americana', label: 'Cozinha Americana' },
+  { key: 'cozinha_gourmet', label: 'Cozinha Gourmet' },
+  { key: 'cozinha_independente', label: 'Cozinha Independente' },
+  { key: 'dependencia_de_empregados', label: 'Dependência de Empregados' },
+  { key: 'deposito', label: 'Depósito' },
+  { key: 'despensa', label: 'Despensa' },
+  { key: 'ducha', label: 'Ducha' },
+  { key: 'escritorio', label: 'Escritório' },
+  { key: 'esgoto', label: 'Esgoto' },
+  { key: 'espelhos_dagua', label: "Espelhos D'água" },
+  { key: 'fogao', label: 'Fogão' },
+  { key: 'fogao_eletrico', label: 'Fogão Elétrico' },
+  { key: 'freezer', label: 'Freezer' },
+  { key: 'frente_para_o_mar', label: 'Frente para o Mar' },
+  { key: 'gas_encanado', label: 'Gás Encanado' },
+  { key: 'gas_natural', label: 'Gás Natural' },
+  { key: 'geladeira', label: 'Geladeira' },
+  { key: 'geminada', label: 'Geminada' },
+  { key: 'grama', label: 'Grama' },
+  { key: 'hidromassagem', label: 'Hidromassagem' },
+  { key: 'home_theater', label: 'Home Theater' },
+  { key: 'interfone', label: 'Interfone' },
+  { key: 'internet_wireless', label: 'Internet / Wireless' },
+  { key: 'isolamento_acustico', label: 'Isolamento Acústico' },
+  { key: 'jacuzzi', label: 'Jacuzzi' },
+  { key: 'lareira', label: 'Lareira' },
+  { key: 'lavabo', label: 'Lavabo' },
+  { key: 'lustres', label: 'Lustres' },
+  { key: 'mezanino', label: 'Mezanino' },
+  { key: 'mobiliado', label: 'Mobiliado' },
+  { key: 'perto_de_escolas', label: 'Perto de Escolas' },
+  { key: 'perto_de_shopping_center', label: 'Perto de Shopping Center' },
+  { key: 'perto_de_transporte_publico', label: 'Perto de Transporte Público' },
+  { key: 'perto_de_vias_de_access', label: 'Perto de Vias de Acesso' },
+  { key: 'piscina', label: 'Piscina' },
+  { key: 'piso_de_madeira', label: 'Piso de Madeira' },
+  { key: 'piso_elevado', label: 'Piso Elevado' },
+  { key: 'piso_frio', label: 'Piso Frio' },
+  { key: 'piso_laminado', label: 'Piso Laminado' },
+  { key: 'porao', label: 'Porão' },
+  { key: 'proximo_a_hospitais', label: 'Próximo a Hospitais' },
+  { key: 'quarto_empregados', label: 'Quarto Empregados' },
+  { key: 'quintal', label: 'Quintal' },
+  { key: 'sacada', label: 'Sacada' },
+  { key: 'sala_de_estar', label: 'Sala de Estar' },
+  { key: 'sala_de_jantar', label: 'Sala de Jantar' },
+  { key: 'sauna', label: 'Sauna' },
+  { key: 'seguranca_na_rua', label: 'Segurança Na Rua' },
+  { key: 'semi_mobiliado', label: 'Semi Mobiliado' },
+  { key: 'servicos_publicos_essenciais', label: 'Serviços Públicos Essenciais' },
+  { key: 'sotao', label: 'Sotão' },
+  { key: 'terraco', label: 'Terraço' },
+  { key: 'teto_rebaixado', label: 'Teto Rebaixado' },
+  { key: 'varanda', label: 'Varanda' },
+  { key: 'varanda_com_churrasqueira', label: 'Varanda com Churrasqueira' },
+  { key: 'varanda_fechada_com_vidro', label: 'Varanda Fechada com Vidro' },
+  { key: 'varanda_gourmet', label: 'Varanda Gourmet' },
+  { key: 'varanda_integrada_com_a_cozinha', label: 'Varanda Integrada com a Cozinha' },
+  { key: 'vista_exterior', label: 'Vista Exterior' },
+  { key: 'vista_para_a_montanha', label: 'Vista para a Montanha' },
+  { key: 'wc_empregados', label: 'Wc Empregados' },
+]), [])
 
   function setField(key, value) {
     setForm(prev => ({ ...prev, [key]: value }))
@@ -131,14 +261,12 @@ export default function NovoImovelPage() {
   }
 
   return (
-
-    <div className="flex">
-      <div className="flex-1/12">
+    <div className="flex h-screen overflow-hidden bg-zinc-50">
+      <div className="w-72 flex-shrink-0">
         <Sidebar />
       </div>
 
-      <div className="flex-10/12">
-
+      <div className="flex-1 overflow-y-auto scrollbar-black">
         <div className="mx-auto max-w-6xl p-6">
           <h1 className="mb-6 text-2xl font-semibold text-zinc-800">Novo imóvel</h1>
 
@@ -283,11 +411,36 @@ export default function NovoImovelPage() {
 
             <section className="rounded-2xl border border-zinc-200 bg-white p-6">
               <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-700">
-                Diferenciais
+                Diferenciais - Condomínio
               </h2>
 
               <div className="flex flex-wrap gap-3">
-                {diferenciais.map(item => {
+                {diferenciaisCondominio.map(item => {
+                  const active = !!form[item.key]
+                  return (
+                    <button
+                      type="button"
+                      key={item.key}
+                      onClick={() => setField(item.key, !active)}
+                      className={`rounded-full border px-4 py-2 text-sm transition ${active
+                          ? 'border-zinc-900 bg-zinc-900 text-white'
+                          : 'border-zinc-300 bg-zinc-50 text-zinc-700'
+                        }`}
+                    >
+                      {item.label}
+                    </button>
+                  )
+                })}
+              </div>
+            </section>
+
+            <section className="rounded-2xl border border-zinc-200 bg-white p-6">
+              <h2 className="mb-4 text-sm font-semibold uppercase tracking-wide text-zinc-700">
+                Diferenciais - Unidade
+              </h2>
+
+              <div className="flex flex-wrap gap-3">
+                {diferenciaisCondominio.map(item => {
                   const active = !!form[item.key]
                   return (
                     <button

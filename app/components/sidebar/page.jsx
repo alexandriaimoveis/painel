@@ -2,7 +2,7 @@ import Link from "next/link"
 
 export default function Sidebar() {
   return (
-    <section className="bg-black text-white px-2 py-4 h-screen flex flex-col">
+    <section className="bg-black text-white px-2 py-4 h-screen flex flex-col overflow-y-auto">
       <h3 className="pb-6 font-bold text-2xl">MENU</h3>
       
       <ul className="flex-1 space-y-2">
