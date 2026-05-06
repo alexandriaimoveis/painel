@@ -440,7 +440,7 @@ export default function NovoImovelPage() {
               </h2>
 
               <div className="flex flex-wrap gap-3">
-                {diferenciaisCondominio.map(item => {
+                {diferenciaisUnidade.map(item => {
                   const active = !!form[item.key]
                   return (
                     <button
