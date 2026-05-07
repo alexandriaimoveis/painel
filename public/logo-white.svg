@@ -1,0 +1,21 @@
+<svg viewBox="0 0 300 110" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Alexandria Negócios Imobiliários</title>
+  <desc id="desc">Lighthouse icon with company name and subtitle in white.</desc>
+  <g fill="none" fill-rule="evenodd">
+    <path fill="#FFFFFF" d="M30 22 96 6l-14 30 14 30z"/>
+    <path fill="#FFFFFF" d="M270 22 204 6l14 30-14 30z"/>
+    <path fill="#FFFFFF" d="M164 23h-28l-18 4v12h64V27z"/>
+    <path fill="#FFFFFF" d="M148 0c-6.6 0-12 5.4-12 12v10h24V12c0-6.6-5.4-12-12-12zm-24 22h48v10h-48z"/>
+    <path fill="#FFFFFF" d="M162 32h-24l-10 58h44z"/>
+    <path fill="#FFFFFF" d="M146 90h12v10h-12z"/>
+    <path fill="#FFFFFF" d="M132 60h36v8h-36z"/>
+    <path fill="#FFFFFF" d="M124 80h52v8h-52z"/>
+    <path fill="#FFFFFF" d="M118 74h64v8h-64z"/>
+    <path fill="#FFFFFF" d="M120 48h60v10h-60z"/>
+    <path fill="#FFFFFF" d="M136 32h28v12h-28z"/>
+    <path fill="#FFFFFF" d="M138 38h24v6h-24z"/>
+    <path fill="#FFFFFF" d="M124 102h60v2h-60z"/>
+  </g>
+  <text x="0" y="92" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="700" fill="#FFFFFF">ALEXANDRIA</text>
+  <text x="0" y="108" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#FFFFFF">NEGÓCIOS IMOBILIÁRIOS</text>
+</svg>

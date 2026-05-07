@@ -1,9 +1,9 @@
 export default function Main() {
   return (
-    <section className="px-4 py-2">
+    <>
       <h3 className="text-4xl">
-        Painel do Site
+        Dashboard
       </h3>
-    </section>
+    </>
   )
 }

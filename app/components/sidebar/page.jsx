@@ -1,9 +1,10 @@
 import Link from "next/link"
+import Image from "next/image"
 
 export default function Sidebar() {
   return (
     <section className="bg-black text-white px-2 py-4 h-screen flex flex-col overflow-y-auto">
-      <h3 className="pb-6 font-bold text-2xl">MENU</h3>
+      <Image src="/logo.png" alt="Logo" width={150} height={50} className="p-2 mb-6" />
       
       <ul className="flex-1 space-y-2">
         <li>
@@ -12,18 +13,18 @@ export default function Sidebar() {
           </Link>
         </li>
         <li>
-          <Link href="/cadastrar-imovel" className="flex items-center p-2 hover:bg-gray-700 rounded">
-            <span>Cadastrar Imóvel</span>
+          <Link href="/imoveis" className="flex items-center p-2 hover:bg-gray-700 rounded">
+            <span>Imóveis</span>
           </Link>
         </li>
         <li>
-          <Link href="/cadastrar-clientes" className="flex items-center p-2 hover:bg-gray-700 rounded">
-            <span>Cadastrar Clientes</span>
+          <Link href="/clientes" className="flex items-center p-2 hover:bg-gray-700 rounded">
+            <span>Clientes</span>
           </Link>
         </li>
         <li>
-          <Link href="/perfil" className="flex items-center p-2 hover:bg-gray-700 rounded">
-            <span>Perfil</span>
+          <Link href="/corretores" className="flex items-center p-2 hover:bg-gray-700 rounded">
+            <span>Corretores</span>
           </Link>
         </li>
       </ul>
