@@ -28,6 +28,7 @@ export async function POST(request) {
     const raw = JSON.parse(formData.get('data') || '{}')
     const files = formData.getAll('files')
 
+    // Montagem do payload alinhada com a nova estrutura de banco
     const payload = {
       codigo: (raw.codigo || '').trim(),
       tipo: raw.tipo,
@@ -52,22 +53,17 @@ export async function POST(request) {
       vagas_garagem: Number(raw.vagas_garagem || 0),
       andar: raw.andar ? Number(raw.andar) : null,
       total_andares: raw.total_andares ? Number(raw.total_andares) : null,
-      aceita_pets: !!raw.aceita_pets,
-      mobiliado: !!raw.mobiliado,
-      semi_mobiliado: !!raw.semi_mobiliado,
-      piscina: !!raw.piscina,
-      churrasqueira: !!raw.churrasqueira,
-      area_servico: !!raw.area_servico,
-      varanda: !!raw.varanda,
-      portaria_24h: !!raw.portaria_24h,
-      academia: !!raw.academia,
-      salao_festas: !!raw.salao_festas,
+      
+      // --- MUDANÇA AQUI: Recebe o objeto de diferenciais vindo do frontend ---
+      diferenciais: raw.diferenciais || {}, 
+      
       titulo: (raw.titulo || '').trim(),
       descricao: (raw.descricao || '').trim() || null,
       destaque: !!raw.destaque,
       corretor_id: raw.corretor_id ? Number(raw.corretor_id) : null,
     }
 
+    // Inserção no banco
     const { data: imovel, error: imovelError } = await supabase
       .from('imoveis')
       .insert(payload)
@@ -75,6 +71,8 @@ export async function POST(request) {
       .single()
 
     if (imovelError) {
+      // Se der erro de "column not found", verifique se o nome das colunas no payload
+      // bate exatamente com as colunas da tabela 'imoveis'
       return Response.json({ error: imovelError.message }, { status: 400 })
     }
 
