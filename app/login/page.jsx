@@ -16,7 +16,6 @@ export default function LoginPage() {
     setLoading(true)
     setError(null)
 
-    // O Supabase Auth já guarda o cookie automaticamente aqui
     const { error: loginError } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -26,8 +25,7 @@ export default function LoginPage() {
       setError('E-mail ou senha incorretos.')
       setLoading(false)
     } else {
-      // O refresh é importante para o Next.js ler o novo cookie
-      router.push('/admin/imoveis')
+      router.push('/')
       router.refresh()
     }
   }

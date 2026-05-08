@@ -2,7 +2,8 @@
 
 import Link from "next/link"
 import Image from "next/image"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
+import { supabase } from "../../lib/supabase/client" // Certifique-se que o caminho está correto
 import { 
   LayoutDashboard, 
   Building2, 
@@ -13,6 +14,7 @@ import {
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const router = useRouter()
 
   const menuItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
@@ -21,7 +23,11 @@ export default function Sidebar() {
     { name: "Corretores", href: "/corretores", icon: UserSquare2 },
   ]
 
-  const brandColor = "#E09C2D" 
+  async function handleLogout() {
+    await supabase.auth.signOut()
+    router.push('/login')
+    router.refresh()
+  }
 
   return (
     <aside className="w-64 bg-[#F1F0E9] text-[#1D2D44] px-4 py-8 h-screen flex flex-col border-r border-gray-200">
@@ -62,13 +68,13 @@ export default function Sidebar() {
       </nav>
 
       <div className="mt-auto pt-6 border-t border-gray-200">
-        <Link 
-          href="/login" 
-          className="flex items-center gap-3 p-3 rounded-xl text-[#546A7B] hover:bg-gray-100 hover:text-[#1D2D44] transition-colors group"
+        <button 
+          onClick={handleLogout}
+          className="flex w-full items-center gap-3 p-3 rounded-xl text-[#546A7B] hover:bg-red-50 hover:text-red-600 transition-colors group"
         >
-          <LogOut size={22} className="text-[#546A7B] group-hover:text-[#1D2D44]" />
+          <LogOut size={22} className="text-[#546A7B] group-hover:text-red-600" />
           <span className="font-semibold text-lg">Sair</span>
-        </Link>
+        </button>
       </div>
     </aside>
   )

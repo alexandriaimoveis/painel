@@ -29,12 +29,10 @@ export async function middleware(request) {
     }
   )
 
-  // Recupera o usuário atual
   const { data: { user } } = await supabase.auth.getUser()
 
   const url = request.nextUrl.clone()
 
-  // LISTA DE PROTEÇÃO: Se não houver usuário e ele tentar acessar essas pastas
   const protectedPaths = ['/imoveis', '/corretores', '/clientes', '/api']
   const isProtected = protectedPaths.some(path => url.pathname.startsWith(path))
 
@@ -43,7 +41,6 @@ export async function middleware(request) {
     return NextResponse.redirect(url)
   }
 
-  // Se já estiver logado e tentar ir para o login, manda para os imóveis
   if (user && url.pathname === '/login') {
     url.pathname = '/imoveis'
     return NextResponse.redirect(url)
@@ -52,7 +49,6 @@ export async function middleware(request) {
   return response
 }
 
-// O matcher diz ao Next.js em quais arquivos o middleware deve rodar
 export const config = {
   matcher: [
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
