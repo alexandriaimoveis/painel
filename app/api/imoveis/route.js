@@ -64,7 +64,7 @@ export async function POST(request) {
       numero: (raw.numero || '').trim() || null,
       complemento: (raw.complemento || '').trim() || null,
       bairro: (raw.bairro || '').trim(),
-      city: (raw.cidade || '').trim(), // Note: verifique se no banco é 'city' ou 'cidade'
+      cidade: (raw.cidade || '').trim(),
       estado: raw.estado,
       area_total: parseNumberValue(raw.area_total),
       area_construida: parseNumberValue(raw.area_construida),

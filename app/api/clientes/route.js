@@ -8,9 +8,14 @@ const supabase = createClient(
 export async function POST(request) {
   try {
     const body = await request.json()
+    
+    const insertPayload = { ...body }
+    delete insertPayload.id
+    delete insertPayload.created_at
+
     const { data, error } = await supabase
       .from('clientes')
-      .insert([body])
+      .insert([insertPayload])
       .select()
 
     if (error) return Response.json({ error: error.message }, { status: 400 })

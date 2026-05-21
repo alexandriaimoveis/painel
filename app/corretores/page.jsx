@@ -104,7 +104,13 @@ export default function CorretoresPage() {
 
     try {
       const formData = new FormData()
-      formData.append('data', JSON.stringify(form))
+      let dadosParaEnviar = { ...form }
+
+      if (!dadosParaEnviar.id) {
+        delete dadosParaEnviar.id
+      }
+
+      formData.append('data', JSON.stringify(dadosParaEnviar))
 
       if (file) {
         formData.append('file', file)
@@ -122,7 +128,7 @@ export default function CorretoresPage() {
         throw new Error(result.error || 'Erro ao processar requisição.')
       }
 
-      setMessage(form.id ? 'Corretor atualizado com sucesso!' : 'Corretor cadastrado com sucesso!')
+      setMessage(form.id ? 'Corretor updated successfully!' : 'Corretor registered successfully!')
 
       setForm(initialState)
       setFile(null)
@@ -306,6 +312,7 @@ export default function CorretoresPage() {
                 <div className="flex items-center gap-8">
                   <div className="relative h-32 w-32 flex-shrink-0 overflow-hidden rounded-2xl border-2 border-zinc-100 bg-zinc-50 shadow-inner">
                     {file ? (
+                      // eslint-disable-next-line @next/next/no-img-element
                       <img
                         src={URL.createObjectURL(file)}
                         className="h-full w-full object-cover"

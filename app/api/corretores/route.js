@@ -38,9 +38,16 @@ export async function POST(request) {
       foto_url = await uploadFoto(file);
     }
 
+    let insertPayload = { ...raw };
+    delete insertPayload.id; 
+    
+    if (foto_url) {
+      insertPayload.foto_url = foto_url;
+    }
+
     const { data, error } = await supabase
       .from("corretores")
-      .insert([{ ...raw, foto_url }])
+      .insert([insertPayload]) // Envia o payload limpo
       .select();
 
     if (error) return Response.json({ error: error.message }, { status: 400 });
