@@ -3,13 +3,14 @@
 import Link from "next/link"
 import Image from "next/image"
 import { usePathname, useRouter } from "next/navigation"
-import { supabase } from "../../lib/supabase/client" // Certifique-se que o caminho está correto
+import { supabase } from "../../lib/supabase/client"
 import { 
   LayoutDashboard, 
   Building2, 
   Users, 
   UserSquare2, 
-  LogOut 
+  LogOut,
+  Heart
 } from "lucide-react"
 
 export default function Sidebar() {
@@ -19,6 +20,7 @@ export default function Sidebar() {
   const menuItems = [
     { name: "Dashboard", href: "/", icon: LayoutDashboard },
     { name: "Imóveis", href: "/imoveis", icon: Building2 },
+    { name: "Favoritos", href: "/favoritos", icon: Heart }, // Novo item adicionado aqui
     { name: "Clientes", href: "/clientes", icon: Users },
     { name: "Corretores", href: "/corretores", icon: UserSquare2 },
   ]
