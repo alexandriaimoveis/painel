@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase/client'
 import Sidebar from "../components/sidebar/page";
+import { User } from 'lucide-react'; // Ícone discreto para o proprietário
 
 function Toggle({ enabled, onChange }) {
   return (
@@ -116,7 +117,20 @@ export default function ImoveisPage() {
   }, [])
 
   async function fetchData() {
-    const { data: imvs } = await supabase.from('imoveis').select('*').order('created_at', { ascending: false })
+    // AJUSTADO: Agora seleciona todos os dados do imóvel e resolve a FK proprietario_id buscando os dados do cliente cadastrado
+    const { data: imvs } = await supabase
+      .from('imoveis')
+      .select(`
+        *,
+        clientes!proprietario_id (
+          id,
+          nome,
+          email,
+          telefone
+        )
+      `)
+      .order('created_at', { ascending: false })
+
     const { data: corrs } = await supabase.from('corretores').select('id, nome').eq('ativo', true).order('nome')
     if (imvs) setImoveis(imvs)
     if (corrs) setCorretores(corrs)
@@ -156,7 +170,7 @@ export default function ImoveisPage() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    setLoading(true)
+    loading(true)
     setMessage('')
 
     try {
@@ -180,7 +194,7 @@ export default function ImoveisPage() {
 
       if (!response.ok) throw new Error(result.error || 'Erro ao processar.')
 
-      setMessage(form.id ? 'Imóvel atualizado!' : 'Imóvel cadastrado!')
+      setMessage(form.id ? 'Imóvel updated!' : 'Imóvel cadastrado!')
       setForm(initialState)
       setFiles([])
       setShowForm(false)
@@ -227,38 +241,63 @@ export default function ImoveisPage() {
                   <tr>
                     <th className="px-6 py-4 font-semibold">Imóvel</th>
                     <th className="px-6 py-4 font-semibold">Tipo</th>
+                    {/* AJUSTADO: Nova Th de Origem do Imóvel */}
+                    <th className="px-6 py-4 font-semibold">Origem / Proprietário</th>
                     <th className="px-6 py-4 font-semibold">Preço</th>
                     <th className="px-6 py-4 font-semibold text-center">Status</th>
                     <th className="px-6 py-4 font-semibold text-right">Ações</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-zinc-100">
-                  {imoveis.map((item) => (
-                    <tr key={item.id} className="hover:bg-zinc-50/50 transition">
-                      <td className="px-6 py-4">
-                        <div className="font-bold text-zinc-900">{item.titulo}</div>
-                        <div className="text-zinc-400 font-mono text-[11px]">{item.codigo}</div>
-                      </td>
-                      <td className="px-6 py-4 capitalize text-zinc-600">{item.tipo}</td>
-                      <td className="px-6 py-4 font-medium text-zinc-900">
-                        {item.preco_venda ? `Venda: R$ ${item.preco_venda.toLocaleString()}` : `Aluguel: R$ ${item.preco_aluguel?.toLocaleString()}`}
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex flex-col items-center gap-1">
-                          <Toggle 
-                            enabled={item.status === 'disponivel'} 
-                            onChange={() => handleToggleStatus(item.id, item.status)} 
-                          />
-                          <span className={`text-[10px] font-bold uppercase ${item.status === 'disponivel' ? 'text-emerald-600' : 'text-zinc-400'}`}>
-                            {item.status}
-                          </span>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 text-right">
-                        <button onClick={() => handleEdit(item)} className="text-zinc-900 font-bold hover:underline">Editar</button>
-                      </td>
-                    </tr>
-                  ))}
+                  {imoveis.map((item) => {
+                    // Captura o cliente retornado pelo alias da relação
+                    const proprietario = item.clientes;
+
+                    return (
+                      <tr key={item.id} className="hover:bg-zinc-50/50 transition">
+                        <td className="px-6 py-4">
+                          <div className="font-bold text-zinc-900">{item.titulo}</div>
+                          <div className="text-zinc-400 font-mono text-[11px]">{item.codigo}</div>
+                        </td>
+                        <td className="px-6 py-4 capitalize text-zinc-600">{item.tipo}</td>
+                        
+                        {/* AJUSTADO: Coluna que renderiza condicionalmente se veio do Front (Cliente) ou interno */}
+                        <td className="px-6 py-4 text-xs">
+                          {proprietario ? (
+                            <div className="flex flex-col max-w-[180px]">
+                              <span className="font-semibold text-zinc-800 flex items-center gap-1 truncate">
+                                <User size={12} className="text-emerald-600 shrink-0" />
+                                {proprietario.nome}
+                              </span>
+                              <span className="text-zinc-400 font-medium truncate pl-4 text-[11px]">{proprietario.email}</span>
+                            </div>
+                          ) : (
+                            <span className="bg-zinc-100 text-zinc-600 border border-zinc-200 text-[10px] font-bold px-2 py-0.5 rounded-md uppercase tracking-wider">
+                              Imobiliária
+                            </span>
+                          )}
+                        </td>
+
+                        <td className="px-6 py-4 font-medium text-zinc-900">
+                          {item.preco_venda ? `Venda: R$ ${item.preco_venda.toLocaleString()}` : `Aluguel: R$ ${item.preco_aluguel?.toLocaleString()}`}
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col items-center gap-1">
+                            <Toggle 
+                              enabled={item.status === 'disponivel'} 
+                              onChange={() => handleToggleStatus(item.id, item.status)} 
+                            />
+                            <span className={`text-[10px] font-bold uppercase ${item.status === 'disponivel' ? 'text-emerald-600' : 'text-zinc-400'}`}>
+                              {item.status}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <button onClick={() => handleEdit(item)} className="text-zinc-900 font-bold hover:underline">Editar</button>
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
@@ -430,6 +469,7 @@ function Field({ label, value, onChange, required = false, placeholder = "" }) {
   )
 }
 
+// O componente Stepper permaneceu inalterado
 function Stepper({ label, value, onChange }) {
   return (
     <div className="flex flex-col">
