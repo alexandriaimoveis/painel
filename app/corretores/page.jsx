@@ -62,6 +62,20 @@ export default function CorretoresPage() {
 
   const setField = (key, value) => setForm(prev => ({ ...prev, [key]: value }))
 
+  // Máscara para Telefone: (11) 99999-9999
+  const maskTelefone = (value) => {
+    return value
+      .replace(/\D/g, '')
+      .replace(/^(\d{2})(\d)/g, '($1) $2')
+      .replace(/(\d{5})(\d)/, '$1-$2')
+      .substring(0, 15);
+  }
+
+  // Máscara para CRECI: converte o final para maiúsculo e limita caracteres
+  const maskCreci = (value) => {
+    return value.toUpperCase().substring(0, 15);
+  }
+
   const handleEdit = (corretor) => {
     setForm({
       id: corretor.id,
@@ -73,6 +87,7 @@ export default function CorretoresPage() {
       foto_url: corretor.foto_url || ''
     })
     setFile(null)
+    setMessage('')
     setShowForm(true)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -128,7 +143,7 @@ export default function CorretoresPage() {
         throw new Error(result.error || 'Erro ao processar requisição.')
       }
 
-      setMessage(form.id ? 'Corretor updated successfully!' : 'Corretor registered successfully!')
+      setMessage(form.id ? 'Corretor atualizado com sucesso!' : 'Corretor cadastrado com sucesso!')
 
       setForm(initialState)
       setFile(null)
@@ -167,8 +182,8 @@ export default function CorretoresPage() {
                 setMessage('');
               }}
               className={`rounded-xl px-6 py-3 text-sm font-semibold transition shadow-sm ${showForm
-                  ? 'bg-white border border-zinc-300 text-zinc-600 hover:bg-zinc-50'
-                  : 'bg-zinc-900 text-white hover:bg-zinc-800'
+                ? 'bg-white border border-zinc-300 text-zinc-600 hover:bg-zinc-50'
+                : 'bg-zinc-900 text-white hover:bg-zinc-800'
                 }`}
             >
               {showForm ? 'Voltar para Lista' : '+ Adicionar Corretor'}
@@ -177,8 +192,8 @@ export default function CorretoresPage() {
 
           {message && (
             <div className={`mb-6 rounded-xl p-4 text-sm font-medium border ${message.includes('Erro')
-                ? 'bg-red-50 text-red-600 border-red-100'
-                : 'bg-emerald-50 text-emerald-600 border-emerald-100'
+              ? 'bg-red-50 text-red-600 border-red-100'
+              : 'bg-emerald-50 text-emerald-600 border-emerald-100'
               }`}>
               {message}
             </div>
@@ -202,7 +217,7 @@ export default function CorretoresPage() {
                       <tr key={item.id} className="hover:bg-zinc-50/50 transition">
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3">
-                            <div className="relative h-10 w-10 overflow-hidden rounded-full bg-zinc-200 border border-zinc-100">
+                            <div className="relative h-10 w-10 flex-shrink-0 overflow-hidden rounded-full bg-zinc-200 border border-zinc-100">
                               {item.foto_url ? (
                                 <Image
                                   src={item.foto_url}
@@ -284,14 +299,14 @@ export default function CorretoresPage() {
                   <Field
                     label="CRECI *"
                     value={form.creci}
-                    onChange={v => setField('creci', v)}
+                    onChange={v => setField('creci', maskCreci(v))}
                     required
                     placeholder="Ex: 12.345-F"
                   />
                   <Field
                     label="Telefone/WhatsApp *"
                     value={form.telefone}
-                    onChange={v => setField('telefone', v)}
+                    onChange={v => setField('telefone', maskTelefone(v))}
                     required
                     placeholder="(00) 00000-0000"
                   />
@@ -299,6 +314,7 @@ export default function CorretoresPage() {
                     <Field
                       label="E-mail Profissional *"
                       value={form.email}
+                      type="email"
                       onChange={v => setField('email', v)}
                       required
                       placeholder="exemplo@imobiliaria.com.br"
@@ -353,7 +369,11 @@ export default function CorretoresPage() {
               <div className="flex items-center justify-end gap-4 border-t border-zinc-200 pt-8">
                 <button
                   type="button"
-                  onClick={() => setShowForm(false)}
+                  onClick={() => {
+                    setShowForm(false);
+                    setForm(initialState);
+                    setFile(null);
+                  }}
                   className="rounded-xl px-8 py-4 text-sm font-semibold text-zinc-600 hover:bg-zinc-100 transition"
                 >
                   Cancelar
@@ -374,11 +394,12 @@ export default function CorretoresPage() {
   )
 }
 
-function Field({ label, value, onChange, required = false, placeholder = "" }) {
+function Field({ label, value, onChange, required = false, placeholder = "", type = "text" }) {
   return (
     <div className="w-full">
       <label className="mb-2 block text-sm font-bold text-zinc-700">{label}</label>
       <input
+        type={type}
         className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-900/10 focus:border-zinc-500 transition placeholder:text-zinc-400"
         value={value || ''}
         onChange={e => onChange(e.target.value)}
