@@ -380,7 +380,7 @@ export default function ImoveisPage() {
 
   async function handleSubmit(e) {
     e.preventDefault()
-    loading(true)
+    setLoading(true)
     setMessage('')
 
     try {
@@ -676,7 +676,6 @@ function Field({ label, value, onChange, required = false, placeholder = "" }) {
   )
 }
 
-// O componente Stepper permaneceu inalterado
 function Stepper({ label, value, onChange }) {
   return (
     <div className="flex flex-col">
