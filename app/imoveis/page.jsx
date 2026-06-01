@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase/client'
 import Sidebar from "../components/sidebar/page";
-import { User } from 'lucide-react'; // Ícone discreto para o proprietário
+import { User } from 'lucide-react';
 
 function Toggle({ enabled, onChange }) {
   return (
@@ -29,38 +29,249 @@ const estados = [
 ]
 
 const LISTA_DIFERENCIAIS = [
-  { key: 'academia', label: 'Academia' }, { key: 'adega', label: 'Adega' }, { key: 'alarme', label: 'Alarme' },
-  { key: 'aquecedor', label: 'Aquecedor' }, { key: 'ar_condicionado', label: 'Ar Condicionado' },
-  { key: 'area_lazer', label: 'Área de Lazer' }, { key: 'area_verde', label: 'Área Verde' },
-  { key: 'arm_cozinha', label: 'Armários Cozinha' }, { key: 'arm_embutido', label: 'Armários Embutidos' },
-  { key: 'banheira', label: 'Banheira' }, { key: 'bicicletario', label: 'Bicicletário' },
-  { key: 'brinquedoteca', label: 'Brinquedoteca' }, { key: 'campo_futebol', label: 'Campo de Futebol' },
-  { key: 'canil', label: 'Canil' }, { key: 'casa_caseiro', label: 'Casa de Caseiro' },
-  { key: 'cerca_eletrica', label: 'Cerca Elétrica' }, { key: 'churrasqueira', label: 'Churrasqueira' },
-  { key: 'closet', label: 'Closet' }, { key: 'copa', label: 'Copa' }, { key: 'cozinha_americana', label: 'Cozinha Americana' },
-  { key: 'cozinha_gourmet', label: 'Cozinha Gourmet' }, { key: 'dep_empregados', label: 'Dep. Empregados' },
-  { key: 'deposito', label: 'Depósito' }, { key: 'despensa', label: 'Despensa' },
-  { key: 'elevador', label: 'Elevador' }, { key: 'escritorio', label: 'Escritório' },
-  { key: 'esgoto', label: 'Esgoto' }, { key: 'espaco_gourmet', label: 'Espaço Gourmet' },
-  { key: 'estacionamento', label: 'Estacionamento' }, { key: 'gas_encanado', label: 'Gás Encanado' },
-  { key: 'gerador', label: 'Gerador' }, { key: 'hidromassagem', label: 'Hidromassagem' },
-  { key: 'home_theater', label: 'Home Theater' }, { key: 'interfone', label: 'Interfone' },
-  { key: 'internet', label: 'Internet' }, { key: 'jardim', label: 'Jardim' },
-  { key: 'lareira', label: 'Lareira' }, { key: 'lavabo', label: 'Lavabo' },
-  { key: 'lavanderia', label: 'Lavanderia' }, { key: 'mezanino', label: 'Mezanino' },
-  { key: 'mobiliado', label: 'Mobiliado' }, { key: 'piscina', label: 'Piscina' },
-  { key: 'piso_elevado', label: 'Piso Elevado' }, { key: 'playground', label: 'Playground' },
-  { key: 'portaria_24h', label: 'Portaria 24h' }, { key: 'quadra_esportiva', label: 'Quadra Esportiva' },
-  { key: 'quintal', label: 'Quintal' }, { key: 'sacada', label: 'Sacada' },
-  { key: 'salao_festas', label: 'Salão de Festas' }, { key: 'salao_jogos', label: 'Salão de Jogos' },
-  { key: 'sauna', label: 'Sauna' }, { key: 'varanda_gourmet', label: 'Varanda Gourmet' }
+  { key: 'academia', label: 'Academia' },
+  { key: 'acesso_deficientes', label: 'Acesso para Deficientes' },
+  { key: 'adega', label: 'Adega' },
+  { key: 'agua', label: 'Água' },
+  { key: 'alarme', label: 'Alarme' },
+  { key: 'almoxarifado', label: 'Almoxarifado' },
+  { key: 'aquecedor', label: 'Aquecedor' },
+  { key: 'aquecimento_central', label: 'Aquecimento Central' },
+  { key: 'aquecimento_solar', label: 'Aquecimento Solar' },
+  { key: 'ar_condicionado', label: 'Ar Condicionado' },
+  { key: 'area_lazer', label: 'Área de Lazer' },
+  { key: 'area_servico', label: 'Área de Serviço' },
+  { key: 'area_verde', label: 'Área Verde / Parque' },
+  { key: 'armario_banheiro', label: 'Armário Banheiro' },
+  { key: 'armario_closet', label: 'Armário Closet' },
+  { key: 'armario_corredor', label: 'Armário Corredor' },
+  { key: 'armario_cozinha', label: 'Armário Cozinha' },
+  { key: 'armario_dormitorio', label: 'Armário Dormitório' },
+  { key: 'armario_escritorio', label: 'Armário Escritório' },
+  { key: 'armario_area_servico', label: 'Armário Área de Serviço' },
+  { key: 'banheira', label: 'Banheira' },
+  { key: 'banheiro_auxiliar', label: 'Banheiro Auxiliar' },
+  { key: 'banheiro_empregada', label: 'Banheiro Empregada' },
+  { key: 'bicicletario', label: 'Bicicletário' },
+  { key: 'brinquedoteca', label: 'Brinquedoteca' },
+  { key: 'boca_lobo', label: 'Boca de Lobo' },
+  { key: 'cabine_primaria', label: 'Cabine Primária' },
+  { key: 'calcetamento', label: 'Calcetamento' },
+  { key: 'cameras_seguranca', label: 'Câmeras de Segurança' },
+  { key: 'campo_futebol', label: 'Campo de Futebol' },
+  { key: 'canal_internet', label: 'Canal Internet' },
+  { key: 'canil', label: 'Canil' },
+  { key: 'casa_caseiro', label: 'Casa de Caseiro' },
+  { key: 'catraca_eletronica', label: 'Catraca Eletrônica' },
+  { key: 'cerca_eletrica', label: 'Cerca Elétrica' },
+  { key: 'churrasqueira', label: 'Churrasqueira' },
+  { key: 'cinema', label: 'Cinema' },
+  { key: 'clube', label: 'Clube' },
+  { key: 'closet', label: 'Closet' },
+  { key: 'com_cerca', label: 'Com Cerca' },
+  { key: 'copa', label: 'Copa' },
+  { key: 'cozinha', label: 'Cozinha' },
+  { key: 'cozinha_americana', label: 'Cozinha Americana' },
+  { key: 'cozinha_independente', label: 'Cozinha Independente' },
+  { key: 'cozinha_gourmet', label: 'Cozinha Gourmet' },
+  { key: 'decorado', label: 'Decorado' },
+  { key: 'dep_empregados', label: 'Dep. Empregados' },
+  { key: 'deposito', label: 'Depósito' },
+  { key: 'despensa', label: 'Despensa' },
+  { key: 'edicula', label: 'Edícula' },
+  { key: 'elevador', label: 'Elevador' },
+  { key: 'elevador_servico', label: 'Elevador de Serviço' },
+  { key: 'energia_eletrica', label: 'Energia Elétrica' },
+  { key: 'entrada_servico_independente', label: 'Entrada de Serviço Independente' },
+  { key: 'entrada_lateral', label: 'Entrada Lateral' },
+  { key: 'escritorio', label: 'Escritório / Home Office' },
+  { key: 'esgoto', label: 'Esgoto' },
+  { key: 'espaco_gourmet', label: 'Espaço Gourmet' },
+  { key: 'espaco_zen', label: 'Espaço Zen' },
+  { key: 'estacionamento', label: 'Estacionamento Rotativo' },
+  { key: 'estacionamento_visitantes', label: 'Estacionamento Visitantes' },
+  { key: 'estrada_asfaltada', label: 'Estrada Asfaltada' },
+  { key: 'frente_mar', label: 'Frente para o Mar' },
+  { key: 'gas_encanado', label: 'Gás Encanado' },
+  { key: 'gerador', label: 'Gerador' },
+  { key: 'guarita', label: 'Guarita' },
+  { key: 'guias_sarjetas', label: 'Guias e Sarjetas' },
+  { key: 'hidromassagem', label: 'Hidromassagem' },
+  { key: 'home_theater', label: 'Home Theater' },
+  { key: 'horta', label: 'Horta' },
+  { key: 'iluminacao_publica', label: 'Iluminação Pública' },
+  { key: 'infraestrutura_internet', label: 'Infraestrutura Internet' },
+  { key: 'interfone', label: 'Interfone' },
+  { key: 'internet', label: 'Internet' },
+  { key: 'jardim', label: 'Jardim' },
+  { key: 'lago', label: 'Lago' },
+  { key: 'lareira', label: 'Lareira' },
+  { key: 'lavabo', label: 'Lavabo' },
+  { key: 'lavanderia', label: 'Lavanderia' },
+  { key: 'lavanderia_coletiva', label: 'Lavanderia Coletiva' },
+  { key: 'luminarias', label: 'Luminárias' },
+  { key: 'mezanino', label: 'Mezanino' },
+  { key: 'mobiliado', label: 'Mobiliado' },
+  { key: 'muro', label: 'Muro' },
+  { key: 'panti_house', label: 'Panti House / Ofurô' },
+  { key: 'pasto', label: 'Pasto' },
+  { key: 'perto_escolas', label: 'Perto de Escolas' },
+  { key: 'perto_hospitais', label: 'Perto de Hospitais' },
+  { key: 'perto_shopping', label: 'Perto de Shopping Center' },
+  { key: 'perto_transporte', label: 'Perto de Transporte Público' },
+  { key: 'perto_vias_acesso', label: 'Perto de Vias de Acesso' },
+  { key: 'piscina', label: 'Piscina' },
+  { key: 'piscina_adulto', label: 'Piscina Adulto' },
+  { key: 'piscina_aquecida', label: 'Piscina Aquecida' },
+  { key: 'piscina_coberta', label: 'Piscina Coberta com Raia' },
+  { key: 'piscina_infantil', label: 'Piscina Infantil' },
+  { key: 'piso_elevado', label: 'Piso Elevado' },
+  { key: 'piso_frio', label: 'Piso Frio' },
+  { key: 'piso_laminado', label: 'Piso Laminado' },
+  { key: 'piso_madeira', label: 'Piso de Madeira' },
+  { key: 'pista_cooper', label: 'Pista de Cooper' },
+  { key: 'playground', label: 'Playground' },
+  { key: 'pomar', label: 'Pomar' },
+  { key: 'portao_eletronico', label: 'Portão Eletrônico' },
+  { key: 'portaria_24h', label: 'Portaria 24h' },
+  { key: 'quadra_esportiva', label: 'Quadra Esportiva' },
+  { key: 'quadra_tennis', label: 'Quadra de Tênis' },
+  { key: 'quintal', label: 'Quintal' },
+  { key: 'recepcao', label: 'Recepção' },
+  { key: 'reservatorio_agua', label: 'Reservatório de Água' },
+  { key: 'sacada', label: 'Sacada' },
+  { key: 'saida_emergencia', label: 'Saída de Emergência' },
+  { key: 'sala_almoco', label: 'Sala de Almoço' },
+  { key: 'sala_conferencias', label: 'Sala de Conferências' },
+  { key: 'sala_jantar', label: 'Sala de Jantar' },
+  { key: 'sala_ginastica', label: 'Sala de Ginástica' },
+  { key: 'sala_massagem', label: 'Sala de Massagem' },
+  { key: 'sala_reuniao', label: 'Sala de Reunião' },
+  { key: 'salao_festas', label: 'Salão de Festas' },
+  { key: 'salao_jogos', label: 'Salão de Jogos' },
+  { key: 'sauna', label: 'Sauna' },
+  { key: 'sauna_umida', label: 'Sauna Úmida' },
+  { key: 'seguranca_interna', label: 'Segurança Interna' },
+  { key: 'sem_condominio', label: 'Sem Condomínio' },
+  { key: 'sistema_alarme', label: 'Sistema de Alarme' },
+  { key: 'sistema_incendio', label: 'Sistema de Incêndio' },
+  { key: 'solarium', label: 'Solarium' },
+  { key: 'spa', label: 'SPA' },
+  { key: 'tv_cabo', label: 'TV a Cabo' },
+  { key: 'vaga_garagem', label: 'Vaga de Garagem' },
+  { key: 'varanda', label: 'Varanda' },
+  { key: 'varanda_gourmet', label: 'Varanda Gourmet' },
+  { key: 'vigilancia_24h', label: 'Vigilância 24h' },
+  { key: 'vista_montanhas', label: 'Vista para Montanhas' },
+  { key: 'vestiario', label: 'Vestiário' },
+  { key: 'wifi', label: 'Wi-Fi' },
+  { key: 'zelador', label: 'Zelador' }
 ];
 
 const MAPA_VISIBILIDADE = {
-  apartamento: ['elevador', 'portaria_24h', 'sacada', 'salao_festas', 'academia', 'piscina', 'gas_encanado', 'playground', 'bicicletario', 'interfone', 'lavanderia'],
-  casa: ['quintal', 'churrasqueira', 'piscina', 'canil', 'jardim', 'alarme', 'cerca_eletrica', 'casa_caseiro', 'copa', 'despensa', 'lareira'],
-  terreno: ['esgoto', 'area_verde', 'cerca_eletrica', 'deposito'],
-  comercial: ['estacionamento', 'ar_condicionado', 'gerador', 'interfone', 'alarme', 'piso_elevado', 'mezanino', 'escritorio'],
+  casa: [
+    'academia', 'adega', 'agua', 'alarme', 'aquecedor', 'aquecimento_central', 'aquecimento_solar', 'ar_condicionado',
+    'area_lazer', 'area_servico', 'area_verde', 'armario_banheiro', 'armario_closet', 'armario_corredor', 'armario_cozinha',
+    'armario_dormitorio', 'armario_escritorio', 'armario_area_servico', 'banheira', 'banheiro_auxiliar', 'banheiro_empregada',
+    'brinquedoteca', 'cameras_seguranca', 'campo_futebol', 'canil', 'casa_caseiro', 'cerca_eletrica', 'churrasqueira',
+    'closet', 'copa', 'cozinha', 'cozinha_americana', 'cozinha_independente', 'cozinha_gourmet', 'decorado', 'dep_empregados',
+    'deposito', 'despensa', 'edicula', 'energia_eletrica', 'entrada_servico_independente', 'entrada_lateral', 'escritorio',
+    'esgoto', 'espaco_gourmet', 'hidromassagem', 'home_theater', 'interfone', 'internet', 'jardim', 'lareira', 'lavabo',
+    'lavanderia', 'luminarias', 'mobiliado', 'muro', 'perto_escolas', 'perto_hospitais', 'perto_shopping', 'perto_transporte',
+    'perto_vias_acesso', 'piscina', 'piscina_adulto', 'piscina_aquecida', 'piscina_infantil', 'piso_frio', 'piso_laminado',
+    'piso_madeira', 'playground', 'portao_eletronico', 'quadra_esportiva', 'quintal', 'sala_almoco', 'sala_jantar',
+    'salao_festas', 'salao_jogos', 'sauna', 'sistema_alarme', 'solarium', 'tv_cabo', 'varanda', 'varanda_gourmet', 'vista_montanhas'
+  ],
+  apartamento: [
+    'academia', 'acesso_deficientes', 'agua', 'alarme', 'aquecedor', 'aquecimento_central', 'aquecimento_solar', 'ar_condicionado',
+    'area_lazer', 'area_servico', 'area_verde', 'armario_banheiro', 'armario_closet', 'armario_corredor', 'armario_cozinha',
+    'armario_dormitorio', 'armario_escritorio', 'armario_area_servico', 'banheira', 'banheiro_auxiliar', 'banheiro_empregada',
+    'bicicletario', 'brinquedoteca', 'cameras_seguranca', 'churrasqueira', 'cinema', 'closet', 'copa', 'cozinha',
+    'cozinha_americana', 'cozinha_independente', 'cozinha_gourmet', 'decorado', 'dep_empregados', 'deposito', 'despensa',
+    'elevador', 'elevador_servico', 'energia_eletrica', 'entrada_servico_independente', 'escritorio', 'esgoto', 'espaco_gourmet',
+    'espaco_zen', 'estacionamento_visitantes', 'gas_encanado', 'gerador', 'guarita', 'hidromassagem', 'home_theater', 'interfone',
+    'internet', 'jardim', 'lareira', 'lavabo', 'lavanderia', 'lavanderia_coletiva', 'luminarias', 'mobiliado', 'panti_house',
+    'perto_escolas', 'perto_hospitais', 'perto_shopping', 'perto_transporte', 'perto_vias_acesso', 'piscina', 'piscina_adulto',
+    'piscina_aquecida', 'piscina_coberta', 'piscina_infantil', 'piso_frio', 'piso_laminado', 'piso_madeira', 'pista_cooper',
+    'playground', 'portao_eletronico', 'portaria_24h', 'quadra_esportiva', 'quadra_tennis', 'recepcao', 'sacada', 'sala_almoco',
+    'sala_jantar', 'sala_ginastica', 'sala_massagem', 'salao_festas', 'salao_jogos', 'sauna', 'sauna_umida', 'seguranca_interna',
+    'sem_condominio', 'sistema_alarme', 'solarium', 'spa', 'tv_cabo', 'varanda', 'varanda_gourmet', 'vigilancia_24h', 'vista_montanhas', 'zelador'
+  ],
+  cobertura: [
+    'academia', 'acesso_deficientes', 'agua', 'alarme', 'aquecedor', 'aquecimento_central', 'aquecimento_solar', 'ar_condicionado',
+    'area_lazer', 'area_servico', 'area_verde', 'armario_banheiro', 'armario_closet', 'armario_corredor', 'armario_cozinha',
+    'armario_dormitorio', 'armario_escritorio', 'armario_area_servico', 'banheira', 'banheiro_auxiliar', 'banheiro_empregada',
+    'bicicletario', 'brinquedoteca', 'cameras_seguranca', 'churrasqueira', 'cinema', 'closet', 'copa', 'cozinha',
+    'cozinha_americana', 'cozinha_independente', 'cozinha_gourmet', 'decorado', 'dep_empregados', 'deposito', 'despensa',
+    'elevador', 'elevador_servico', 'energia_eletrica', 'entrada_servico_independente', 'escritorio', 'esgoto', 'espaco_gourmet',
+    'espaco_zen', 'estacionamento_visitantes', 'gas_encanado', 'gerador', 'guarita', 'hidromassagem', 'home_theater', 'interfone',
+    'internet', 'jardim', 'lareira', 'lavabo', 'lavanderia', 'lavanderia_coletiva', 'luminarias', 'mobiliado', 'panti_house',
+    'perto_escolas', 'perto_hospitais', 'perto_shopping', 'perto_transporte', 'perto_vias_acesso', 'piscina', 'piscina_adulto',
+    'piscina_aquecida', 'piscina_coberta', 'piscina_infantil', 'piso_frio', 'piso_laminado', 'piso_madeira', 'pista_cooper',
+    'playground', 'portao_eletronico', 'portaria_24h', 'quadra_esportiva', 'quadra_tennis', 'recepcao', 'sacada', 'sala_almoco',
+    'sala_jantar', 'sala_ginastica', 'sala_massagem', 'salao_festas', 'salao_jogos', 'sauna', 'sauna_umida', 'seguranca_interna',
+    'sem_condominio', 'sistema_alarme', 'solarium', 'spa', 'tv_cabo', 'varanda', 'varanda_gourmet', 'vigilancia_24h', 'vista_montanhas', 'zelador'
+  ],
+  terreno: [
+    'agua', 'boca_lobo', 'calcetamento', 'com_cerca', 'energia_eletrica', 'esgoto', 'estrada_asfaltada', 'frente_mar',
+    'guias_sarjetas', 'iluminacao_publica', 'muro', 'perto_vias_acesso', 'portao_eletronico', 'vista_montanhas'
+  ],
+  chacara: [
+    'agua', 'alarme', 'area_lazer', 'area_servico', 'area_verde', 'armario_cozinha', 'banheiro_auxiliar', 'campo_futebol',
+    'canil', 'casa_caseiro', 'cerca_eletrica', 'churrasqueira', 'clube', 'com_cerca', 'copa', 'cozinha', 'cozinha_independente',
+    'deposito', 'despensa', 'edicula', 'energia_eletrica', 'escritorio', 'esgoto', 'espaco_gourmet', 'estrada_asfaltada',
+    'horta', 'interfone', 'internet', 'jardim', 'lago', 'lareira', 'lavabo', 'lavanderia', 'mobiliado', 'muro', 'pasto',
+    'piscina', 'piscina_adulto', 'piscina_infantil', 'piso_frio', 'playground', 'pomar', 'portao_eletronico', 'quadra_esportiva',
+    'quintal', 'sala_jantar', 'salao_festas', 'salao_jogos', 'sauna', 'sistema_alarme', 'solarium', 'varanda', 'varanda_gourmet', 'vista_montanhas'
+  ],
+  sitio: [
+    'agua', 'alarme', 'area_lazer', 'area_servico', 'area_verde', 'armario_cozinha', 'banheiro_auxiliar', 'campo_futebol',
+    'canil', 'casa_caseiro', 'cerca_eletrica', 'churrasqueira', 'clube', 'com_cerca', 'copa', 'cozinha', 'cozinha_independente',
+    'deposito', 'despensa', 'edicula', 'energia_eletrica', 'escritorio', 'esgoto', 'espaco_gourmet', 'estrada_asfaltada',
+    'horta', 'interfone', 'internet', 'jardim', 'lago', 'lareira', 'lavabo', 'lavanderia', 'mobiliado', 'muro', 'pasto',
+    'piscina', 'piscina_adulto', 'piscina_infantil', 'piso_frio', 'playground', 'pomar', 'portao_eletronico', 'quadra_esportiva',
+    'quintal', 'sala_jantar', 'salao_festas', 'salao_jogos', 'sauna', 'sistema_alarme', 'solarium', 'varanda', 'varanda_gourmet', 'vista_montanhas'
+  ],
+  comercial: [
+    'acesso_deficientes', 'agua', 'alarme', 'almoxarifado', 'ar_condicionado', 'area_servico', 'armario_banheiro',
+    'armario_cozinha', 'armario_escritorio', 'cabine_primaria', 'cameras_seguranca', 'canal_internet', 'catraca_eletronica',
+    'cerca_eletrica', 'copa', 'cozinha', 'cozinha_independente', 'deposito', 'elevador', 'elevador_servico', 'energia_eletrica',
+    'entrada_servico_independente', 'escritorio', 'esgoto', 'estacionamento', 'estacionamento_visitantes', 'gerador', 'guarita',
+    'infraestrutura_internet', 'interfone', 'internet', 'luminarias', 'mezanino', 'mobiliado', 'perto_escolas', 'perto_hospitais',
+    'perto_shopping', 'perto_transporte', 'perto_vias_acesso', 'piso_elevado', 'piso_frio', 'piso_laminado', 'piso_madeira',
+    'portao_eletronico', 'portaria_24h', 'recepcao', 'reservatorio_agua', 'saida_emergencia', 'sala_conferencias',
+    'sala_reuniao', 'seguranca_interna', 'sistema_alarme', 'sistema_incendio', 'tv_cabo', 'vigilancia_24h', 'vestiario', 'wifi', 'zelador'
+  ],
+  galpao: [
+    'acesso_deficientes', 'agua', 'alarme', 'almoxarifado', 'ar_condicionado', 'area_servico', 'armario_banheiro',
+    'armario_cozinha', 'armario_escritorio', 'cabine_primaria', 'cameras_seguranca', 'canal_internet', 'catraca_eletronica',
+    'cerca_eletrica', 'copa', 'cozinha', 'cozinha_independente', 'deposito', 'elevador', 'elevador_servico', 'energia_eletrica',
+    'entrada_servico_independente', 'escritorio', 'esgoto', 'estacionamento', 'estacionamento_visitantes', 'gerador', 'guarita',
+    'infraestrutura_internet', 'interfone', 'internet', 'luminarias', 'mezanino', 'mobiliado', 'perto_escolas', 'perto_hospitais',
+    'perto_shopping', 'perto_transporte', 'perto_vias_acesso', 'piso_elevado', 'piso_frio', 'piso_laminado', 'piso_madeira',
+    'portao_eletronico', 'portaria_24h', 'recepcao', 'reservatorio_agua', 'saida_emergencia', 'sala_conferencias',
+    'sala_reuniao', 'seguranca_interna', 'sistema_alarme', 'sistema_incendio', 'tv_cabo', 'vigilancia_24h', 'vestiario', 'wifi', 'zelador'
+  ],
+  loja: [
+    'acesso_deficientes', 'agua', 'alarme', 'almoxarifado', 'ar_condicionado', 'area_servico', 'armario_banheiro',
+    'armario_cozinha', 'armario_escritorio', 'cabine_primaria', 'cameras_seguranca', 'canal_internet', 'catraca_eletronica',
+    'cerca_eletrica', 'copa', 'cozinha', 'cozinha_independente', 'deposito', 'elevador', 'elevador_servico', 'energia_eletrica',
+    'entrada_servico_independente', 'escritorio', 'esgoto', 'estacionamento', 'estacionamento_visitantes', 'gerador', 'guarita',
+    'infraestrutura_internet', 'interfone', 'internet', 'luminarias', 'mezanino', 'mobiliado', 'perto_escolas', 'perto_hospitais',
+    'perto_shopping', 'perto_transporte', 'perto_vias_acesso', 'piso_elevado', 'piso_frio', 'piso_laminado', 'piso_madeira',
+    'portao_eletronico', 'portaria_24h', 'recepcao', 'reservatorio_agua', 'saida_emergencia', 'sala_conferencias',
+    'sala_reuniao', 'seguranca_interna', 'sistema_alarme', 'sistema_incendio', 'tv_cabo', 'vigilancia_24h', 'vestiario', 'wifi', 'zelador'
+  ],
+  sala: [
+    'acesso_deficientes', 'agua', 'alarme', 'almoxarifado', 'ar_condicionado', 'area_servico', 'armario_banheiro',
+    'armario_cozinha', 'armario_escritorio', 'cabine_primaria', 'cameras_seguranca', 'canal_internet', 'catraca_eletronica',
+    'cerca_eletrica', 'copa', 'cozinha', 'cozinha_independente', 'deposito', 'elevador', 'elevador_servico', 'energia_eletrica',
+    'entrada_servico_independente', 'escritorio', 'esgoto', 'estacionamento', 'estacionamento_visitantes', 'gerador', 'guarita',
+    'infraestrutura_internet', 'interfone', 'internet', 'luminarias', 'mezanino', 'mobiliado', 'perto_escolas', 'perto_hospitais',
+    'perto_shopping', 'perto_transporte', 'perto_vias_acesso', 'piso_elevado', 'piso_frio', 'piso_laminado', 'piso_madeira',
+    'portao_eletronico', 'portaria_24h', 'recepcao', 'reservatorio_agua', 'saida_emergencia', 'sala_conferencias',
+    'sala_reuniao', 'seguranca_interna', 'sistema_alarme', 'sistema_incendio', 'tv_cabo', 'vigilancia_24h', 'vestiario', 'wifi', 'zelador'
+  ]
 };
 
 const DIFERENCIAIS_GERAIS = ['internet', 'ar_condicionado', 'mobiliado', 'dep_empregados'];
@@ -117,7 +328,6 @@ export default function ImoveisPage() {
   }, [])
 
   async function fetchData() {
-    // AJUSTADO: Agora seleciona todos os dados do imóvel e resolve a FK proprietario_id buscando os dados do cliente cadastrado
     const { data: imvs } = await supabase
       .from('imoveis')
       .select(`
@@ -241,7 +451,6 @@ export default function ImoveisPage() {
                   <tr>
                     <th className="px-6 py-4 font-semibold">Imóvel</th>
                     <th className="px-6 py-4 font-semibold">Tipo</th>
-                    {/* AJUSTADO: Nova Th de Origem do Imóvel */}
                     <th className="px-6 py-4 font-semibold">Origem / Proprietário</th>
                     <th className="px-6 py-4 font-semibold">Preço</th>
                     <th className="px-6 py-4 font-semibold text-center">Status</th>
@@ -250,7 +459,6 @@ export default function ImoveisPage() {
                 </thead>
                 <tbody className="divide-y divide-zinc-100">
                   {imoveis.map((item) => {
-                    // Captura o cliente retornado pelo alias da relação
                     const proprietario = item.clientes;
 
                     return (
@@ -261,7 +469,6 @@ export default function ImoveisPage() {
                         </td>
                         <td className="px-6 py-4 capitalize text-zinc-600">{item.tipo}</td>
                         
-                        {/* AJUSTADO: Coluna que renderiza condicionalmente se veio do Front (Cliente) ou interno */}
                         <td className="px-6 py-4 text-xs">
                           {proprietario ? (
                             <div className="flex flex-col max-w-[180px]">
