@@ -5,6 +5,12 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 )
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 function parseNumberValue(value) {
   if (value === null || value === undefined || value === '') return null
   const n = Number(String(value).replace(',', '.'))
@@ -103,7 +109,6 @@ export async function PUT(request) {
 
     if (!id) throw new Error("ID do imóvel não fornecido.")
 
-    // Se o payload for apenas ID e Status (Toggle rápido da tabela)
     const isQuickUpdate = Object.keys(raw).length === 2 && raw.status
 
     let payload

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../lib/supabase/client'
 import Sidebar from "../components/sidebar/page";
 import { User } from 'lucide-react';
+import imageCompression from 'browser-image-compression';
 
 function Toggle({ enabled, onChange }) {
   return (
@@ -396,15 +397,45 @@ export default function ImoveisPage() {
       
       const body = new FormData()
       body.append('data', JSON.stringify(dataToSend))
-      files.forEach(file => body.append('files', file))
 
+      const options = {
+        maxSizeMB: 0.8,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true
+      }
+
+      setMessage('Otimizando imagens para o servidor...')
+      
+      for (const file of files) {
+        if (file.type && file.type.startsWith('image/')) {
+          try {
+            const compressedBlob = await imageCompression(file, options);
+            const optimizedFile = new File([compressedBlob], file.name, { type: file.type });
+            body.append('files', optimizedFile);
+          } catch (compError) {
+            console.error("Falha na compressão, enviando arquivo original:", file.name, compError);
+            body.append('files', file); 
+          }
+        } else {
+          body.append('files', file);
+        }
+      }
+
+      setMessage('Enviando dados do imóvel...')
       const method = form.id ? 'PUT' : 'POST';
       const response = await fetch('/api/imoveis', { method, body })
-      const result = await response.json()
+      
+      const contentType = response.headers.get("content-type");
+      let result = {};
+      if (contentType && contentType.includes("application/json")) {
+        result = await response.json();
+      } else {
+        throw new Error(`Servidor rejeitou dados (Status ${response.status}). Imagens muito grandes.`);
+      }
 
       if (!response.ok) throw new Error(result.error || 'Erro ao processar.')
 
-      setMessage(form.id ? 'Imóvel updated!' : 'Imóvel cadastrado!')
+      setMessage(form.id ? 'Imóvel atualizado!' : 'Imóvel cadastrado!')
       setForm(initialState)
       setFiles([])
       setShowForm(false)
