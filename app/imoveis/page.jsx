@@ -19,7 +19,7 @@ function Toggle({ enabled, onChange }) {
 }
 
 const tiposImovel = [
-  'casa', 'apartamento', 'cobertura', 'terreno', 'chacara', 
+  'casa', 'apartamento', 'cobertura', 'terreno', 'chacara',
   'sitio', 'comercial', 'galpao', 'loja', 'sala'
 ]
 
@@ -279,32 +279,32 @@ const DIFERENCIAIS_GERAIS = ['internet', 'ar_condicionado', 'mobiliado', 'dep_em
 
 const baseState = {
   id: null,
-  codigo: '', 
-  tipo: '', 
-  finalidade: 'venda', 
+  codigo: '',
+  tipo: '',
+  finalidade: 'venda',
   status: 'disponivel',
-  preco_venda: '', 
-  preco_aluguel: '', 
-  valor_condominio: '', 
+  preco_venda: '',
+  preco_aluguel: '',
+  valor_condominio: '',
   valor_iptu: '',
-  cep: '', 
-  logradouro: '', 
-  numero: '', 
-  complemento: '', 
-  bairro: '', 
-  cidade: '', 
+  cep: '',
+  logradouro: '',
+  numero: '',
+  complemento: '',
+  bairro: '',
+  cidade: '',
   estado: 'MG',
-  area_total: '', 
-  area_construida: '', 
-  quartos: 0, 
-  suites: 0, 
-  banheiros: 0, 
+  area_total: '',
+  area_construida: '',
+  quartos: 0,
+  suites: 0,
+  banheiros: 0,
   vagas_garagem: 0,
-  andar: '', 
-  total_andares: '', 
-  titulo: '', 
-  descricao: '', 
-  destaque: false, 
+  andar: '',
+  total_andares: '',
+  titulo: '',
+  descricao: '',
+  destaque: false,
   corretor_id: '',
 }
 
@@ -352,7 +352,7 @@ export default function ImoveisPage() {
   const diferenciaisExibidos = useMemo(() => {
     if (!form.tipo) return [];
     const permitidos = MAPA_VISIBILIDADE[form.tipo] || [];
-    return LISTA_DIFERENCIAIS.filter(item => 
+    return LISTA_DIFERENCIAIS.filter(item =>
       permitidos.includes(item.key) || DIFERENCIAIS_GERAIS.includes(item.key)
     );
   }, [form.tipo]);
@@ -387,14 +387,14 @@ export default function ImoveisPage() {
     try {
       const payload = { ...form };
       const diferenciaisMap = {};
-      
+
       LISTA_DIFERENCIAIS.forEach(item => {
         diferenciaisMap[item.key] = !!payload[item.key];
         delete payload[item.key];
       });
 
       const dataToSend = { ...payload, diferenciais: diferenciaisMap };
-      
+
       const body = new FormData()
       body.append('data', JSON.stringify(dataToSend))
 
@@ -405,7 +405,7 @@ export default function ImoveisPage() {
       }
 
       setMessage('Otimizando imagens para o servidor...')
-      
+
       for (const file of files) {
         if (file.type && file.type.startsWith('image/')) {
           try {
@@ -414,7 +414,7 @@ export default function ImoveisPage() {
             body.append('files', optimizedFile);
           } catch (compError) {
             console.error("Falha na compressão, enviando arquivo original:", file.name, compError);
-            body.append('files', file); 
+            body.append('files', file);
           }
         } else {
           body.append('files', file);
@@ -424,7 +424,7 @@ export default function ImoveisPage() {
       setMessage('Enviando dados do imóvel...')
       const method = form.id ? 'PUT' : 'POST';
       const response = await fetch('/api/imoveis', { method, body })
-      
+
       const contentType = response.headers.get("content-type");
       let result = {};
       if (contentType && contentType.includes("application/json")) {
@@ -433,7 +433,15 @@ export default function ImoveisPage() {
         throw new Error(`Servidor rejeitou dados (Status ${response.status}). Imagens muito grandes.`);
       }
 
-      if (!response.ok) throw new Error(result.error || 'Erro ao processar.')
+      // if (!response.ok) throw new Error(result.error || 'Erro ao processar.')
+
+      if (!response.ok) {
+        const msg = result.error || '';
+        if (msg.includes('imoveis_codigo_key')) {
+          throw new Error('Código interno já cadastrado. Use um código diferente.');
+        }
+        throw new Error(msg || 'Erro ao processar.');
+      }
 
       setMessage(form.id ? 'Imóvel atualizado!' : 'Imóvel cadastrado!')
       setForm(initialState)
@@ -453,7 +461,7 @@ export default function ImoveisPage() {
 
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-6xl p-6">
-          
+
           <header className="mb-8 flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-zinc-900">
@@ -461,7 +469,7 @@ export default function ImoveisPage() {
               </h1>
               <p className="text-zinc-500">Administre os anúncios e disponibilidade do portal.</p>
             </div>
-            <button 
+            <button
               onClick={() => { setShowForm(!showForm); setForm(initialState); setMessage(''); }}
               className={`rounded-xl px-6 py-3 text-sm font-semibold shadow-sm transition ${showForm ? 'bg-white border border-zinc-300 text-zinc-600' : 'bg-zinc-900 text-white hover:bg-zinc-800'}`}
             >
@@ -499,7 +507,7 @@ export default function ImoveisPage() {
                           <div className="text-zinc-400 font-mono text-[11px]">{item.codigo}</div>
                         </td>
                         <td className="px-6 py-4 capitalize text-zinc-600">{item.tipo}</td>
-                        
+
                         <td className="px-6 py-4 text-xs">
                           {proprietario ? (
                             <div className="flex flex-col max-w-[180px]">
@@ -521,9 +529,9 @@ export default function ImoveisPage() {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex flex-col items-center gap-1">
-                            <Toggle 
-                              enabled={item.status === 'disponivel'} 
-                              onChange={() => handleToggleStatus(item.id, item.status)} 
+                            <Toggle
+                              enabled={item.status === 'disponivel'}
+                              onChange={() => handleToggleStatus(item.id, item.status)}
                             />
                             <span className={`text-[10px] font-bold uppercase ${item.status === 'disponivel' ? 'text-emerald-600' : 'text-zinc-400'}`}>
                               {item.status}
@@ -541,15 +549,15 @@ export default function ImoveisPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-8 pb-20">
-              
+
               <section className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
                 <div className="mb-6 flex items-center justify-between border-b pb-2">
                   <h2 className="text-lg font-semibold text-zinc-800">1. Identificação</h2>
                   <div className="flex items-center gap-3">
                     <span className="text-sm font-medium text-zinc-500 italic">Disponível?</span>
-                    <Toggle 
-                      enabled={form.status === 'disponivel'} 
-                      onChange={() => setField('status', form.status === 'disponivel' ? 'indisponivel' : 'disponivel')} 
+                    <Toggle
+                      enabled={form.status === 'disponivel'}
+                      onChange={() => setField('status', form.status === 'disponivel' ? 'indisponivel' : 'disponivel')}
                     />
                   </div>
                 </div>
@@ -558,7 +566,7 @@ export default function ImoveisPage() {
                     <Field label="Título do Anúncio *" value={form.titulo} onChange={v => setField('titulo', v)} required placeholder="Ex: Apartamento decorado no Centro" />
                   </div>
                   <Field label="Código Interno *" value={form.codigo} onChange={v => setField('codigo', v)} required placeholder="Ex: AP001" />
-                  
+
                   <div>
                     <label className="mb-2 block text-sm font-bold text-zinc-700">Corretor Responsável</label>
                     <select className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-200" value={form.corretor_id} onChange={e => setField('corretor_id', e.target.value)}>
@@ -638,9 +646,8 @@ export default function ImoveisPage() {
                       key={item.key}
                       type="button"
                       onClick={() => setField(item.key, !form[item.key])}
-                      className={`rounded-full border px-5 py-2 text-sm font-medium transition-all ${
-                        form[item.key] ? 'border-zinc-900 bg-zinc-900 text-white shadow-md' : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
-                      }`}
+                      className={`rounded-full border px-5 py-2 text-sm font-medium transition-all ${form[item.key] ? 'border-zinc-900 bg-zinc-900 text-white shadow-md' : 'border-zinc-300 bg-white text-zinc-600 hover:border-zinc-400'
+                        }`}
                     >
                       {item.label}
                     </button>
@@ -653,9 +660,9 @@ export default function ImoveisPage() {
                 <div className="space-y-6">
                   <div>
                     <label className="mb-2 block text-sm font-bold text-zinc-700">Descrição</label>
-                    <textarea 
-                      className="min-h-[150px] w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-900/10 transition" 
-                      value={form.descricao} 
+                    <textarea
+                      className="min-h-[150px] w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-900/10 transition"
+                      value={form.descricao}
                       onChange={e => setField('descricao', e.target.value)}
                       placeholder="Detalhes do imóvel..."
                     />
@@ -696,12 +703,12 @@ function Field({ label, value, onChange, required = false, placeholder = "" }) {
   return (
     <div className="w-full">
       <label className="mb-2 block text-sm font-bold text-zinc-700">{label}</label>
-      <input 
-        className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-900/10 transition" 
-        value={value || ''} 
-        onChange={e => onChange(e.target.value)} 
-        required={required} 
-        placeholder={placeholder} 
+      <input
+        className="w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-900/10 transition"
+        value={value || ''}
+        onChange={e => onChange(e.target.value)}
+        required={required}
+        placeholder={placeholder}
       />
     </div>
   )
