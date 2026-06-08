@@ -13,14 +13,12 @@ function Toggle({ enabled, onChange, loading }) {
         onChange();
       }}
       disabled={loading}
-      className={`${
-        enabled ? 'bg-zinc-900' : 'bg-zinc-300'
-      } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50`}
+      className={`${enabled ? 'bg-zinc-900' : 'bg-zinc-300'
+        } relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50`}
     >
       <span
-        className={`${
-          enabled ? 'translate-x-6' : 'translate-x-1'
-        } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
+        className={`${enabled ? 'translate-x-6' : 'translate-x-1'
+          } inline-block h-4 w-4 transform rounded-full bg-white transition-transform`}
       />
     </button>
   )
@@ -72,7 +70,7 @@ export default function ClientesPage() {
 
       if (!response.ok) throw new Error('Erro ao atualizar status')
 
-      setClientes(prev => prev.map(c => 
+      setClientes(prev => prev.map(c =>
         c.id === id ? { ...c, ativo: !statusAtual } : c
       ))
     } catch (error) {
@@ -109,17 +107,17 @@ export default function ClientesPage() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50">
-      <div className="w-56 flex-shrink-0"><Sidebar /></div>
+      <div className="w-64 flex-shrink-0"><Sidebar /></div>
 
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-6xl p-6">
-          
+
           <header className="mb-8 flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-zinc-900">Gestão de Clientes</h1>
               <p className="text-zinc-500">Controle sua base de contatos e interessados.</p>
             </div>
-            <button 
+            <button
               onClick={() => { setShowForm(!showForm); setForm(initialState); setMessage(''); }}
               className={`rounded-xl px-6 py-3 text-sm font-semibold transition ${showForm ? 'bg-white border border-zinc-300 text-zinc-600' : 'bg-zinc-900 text-white hover:bg-zinc-800'}`}
             >
@@ -155,9 +153,9 @@ export default function ClientesPage() {
                       </td>
                       <td className="px-6 py-4 text-center">
                         <div className="flex flex-col items-center gap-1">
-                          <Toggle 
-                            enabled={item.ativo} 
-                            onChange={() => handleToggleAtivo(item.id, item.ativo)} 
+                          <Toggle
+                            enabled={item.ativo}
+                            onChange={() => handleToggleAtivo(item.id, item.ativo)}
                           />
                           <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-tighter">
                             {item.ativo ? 'Ativo' : 'Inativo'}
@@ -179,44 +177,44 @@ export default function ClientesPage() {
             <form onSubmit={handleSubmit} className="space-y-8 pb-20">
               <section className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
                 <div className="mb-6 flex items-center justify-between border-b pb-2">
-                   <h2 className="text-lg font-semibold text-zinc-800">Informações de Contato</h2>
-                   <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-zinc-500">Cliente Ativo?</span>
-                      <Toggle 
-                        enabled={form.ativo} 
-                        onChange={() => setField('ativo', !form.ativo)} 
-                      />
-                   </div>
-                </div>
-                
-                <div className="grid gap-6 md:grid-cols-2">
-                  <div className="md:col-span-2">
-                    <Field 
-                      label="Nome Completo *" 
-                      value={form.nome} 
-                      onChange={v => setField('nome', v)} 
-                      required 
-                      placeholder="Ex: Maria Oliveira" 
+                  <h2 className="text-lg font-semibold text-zinc-800">Informações de Contato</h2>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm font-medium text-zinc-500">Cliente Ativo?</span>
+                    <Toggle
+                      enabled={form.ativo}
+                      onChange={() => setField('ativo', !form.ativo)}
                     />
                   </div>
-                  <Field 
-                    label="Telefone / WhatsApp *" 
-                    value={form.telefone} 
-                    onChange={v => setField('telefone', v)} 
-                    required 
-                    placeholder="(00) 00000-0000" 
+                </div>
+
+                <div className="grid gap-6 md:grid-cols-2">
+                  <div className="md:col-span-2">
+                    <Field
+                      label="Nome Completo *"
+                      value={form.nome}
+                      onChange={v => setField('nome', v)}
+                      required
+                      placeholder="Ex: Maria Oliveira"
+                    />
+                  </div>
+                  <Field
+                    label="Telefone / WhatsApp *"
+                    value={form.telefone}
+                    onChange={v => setField('telefone', v)}
+                    required
+                    placeholder="(00) 00000-0000"
                   />
-                  <Field 
-                    label="E-mail" 
-                    value={form.email} 
-                    onChange={v => setField('email', v)} 
-                    placeholder="exemplo@email.com" 
+                  <Field
+                    label="E-mail"
+                    value={form.email}
+                    onChange={v => setField('email', v)}
+                    placeholder="exemplo@email.com"
                   />
                   <div className="md:col-span-2">
                     <label className="mb-2 block text-sm font-medium text-zinc-700">Observações Internas</label>
-                    <textarea 
-                      className="min-h-[120px] w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-200 transition" 
-                      value={form.observacoes} 
+                    <textarea
+                      className="min-h-[120px] w-full rounded-xl border border-zinc-300 px-4 py-3 outline-none focus:ring-2 focus:ring-zinc-200 transition"
+                      value={form.observacoes}
                       onChange={e => setField('observacoes', e.target.value)}
                       placeholder="Interesse em casas no bairro X, perfil investidor..."
                     />
@@ -225,16 +223,16 @@ export default function ClientesPage() {
               </section>
 
               <div className="flex items-center justify-end gap-4 border-t pt-8">
-                <button 
-                  type="button" 
-                  onClick={() => setShowForm(false)} 
+                <button
+                  type="button"
+                  onClick={() => setShowForm(false)}
                   className="rounded-xl px-6 py-3 text-sm font-semibold text-zinc-600 hover:bg-zinc-100"
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="submit" 
-                  disabled={loading} 
+                <button
+                  type="submit"
+                  disabled={loading}
                   className="rounded-xl bg-zinc-900 px-10 py-3 text-sm font-semibold text-white shadow-lg transition hover:bg-zinc-800 disabled:opacity-50"
                 >
                   {loading ? 'Salvando...' : (form.id ? 'Salvar Alterações' : 'Cadastrar Cliente')}

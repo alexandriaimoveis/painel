@@ -37,39 +37,40 @@ export default function Dashboard() {
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50">
+      
 
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-6xl p-8">
-          
+        <div className="mx-auto max-w-6xl p-6">
+
           <header className="mb-10">
             <h1 className="text-4xl font-extrabold text-zinc-900 tracking-tight">Bem-vindo ao Portal</h1>
             <p className="text-zinc-500 mt-2 text-lg">Aqui está o resumo da sua imobiliária hoje.</p>
           </header>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            
-            <StatCard 
-              title="Imóveis" 
-              count={stats.imoveis} 
-              label="cadastrados" 
+
+            <StatCard
+              title="Imóveis"
+              count={stats.imoveis}
+              label="cadastrados"
               icon={<Home className="w-6 h-6" />}
               color="bg-blue-600"
               loading={loading}
             />
 
-            <StatCard 
-              title="Clientes" 
-              count={stats.clientes} 
-              label="na base de dados" 
+            <StatCard
+              title="Clientes"
+              count={stats.clientes}
+              label="na base de dados"
               icon={<Users className="w-6 h-6" />}
               color="bg-emerald-600"
               loading={loading}
             />
 
-            <StatCard 
-              title="Corretores" 
-              count={stats.corretores} 
-              label="equipe ativa" 
+            <StatCard
+              title="Corretores"
+              count={stats.corretores}
+              label="equipe ativa"
               icon={<Briefcase className="w-6 h-6" />}
               color="bg-purple-600"
               loading={loading}
@@ -102,7 +103,7 @@ function StatCard({ title, count, label, icon, color, loading }) {
         </div>
         <ArrowRight className="w-5 h-5 text-zinc-300 group-hover:text-zinc-900 transition-colors" />
       </div>
-      
+
       {loading ? (
         <div className="h-10 w-24 bg-zinc-100 animate-pulse rounded-lg mb-2"></div>
       ) : (
@@ -110,7 +111,7 @@ function StatCard({ title, count, label, icon, color, loading }) {
           {count}
         </h3>
       )}
-      
+
       <p className="mt-2 font-bold text-zinc-800 uppercase tracking-wider text-xs">
         {title}
       </p>

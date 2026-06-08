@@ -18,7 +18,7 @@ export default function FavoritosPage() {
     setLoading(true);
     try {
       // 1. Limpa o estado anterior para evitar acúmulos na memória do React
-      setFavoritos([]); 
+      setFavoritos([]);
 
       // Puxa os favoritos cruzando diretamente com as tabelas de imóveis e clientes pelas FKs corretas
       const { data, error } = await supabase
@@ -50,7 +50,7 @@ export default function FavoritosPage() {
       if (error) throw error;
 
       const linhasValidas = data || [];
-      
+
       // 2. Cria um mapa estático de contagem baseado estritamente nos dados do banco
       const contagemMapa = {};
       linhasValidas.forEach(item => {
@@ -85,18 +85,18 @@ export default function FavoritosPage() {
       if (error) throw error;
 
       setMessage("Favorito removido com sucesso!");
-      
+
       // Remove localmente do estado e recalcula as frequências para manter a tela atualizada
       setFavoritos((prev) => {
         const filtrados = prev.filter((item) => item.id !== id);
-        
+
         const novoMapa = {};
         filtrados.forEach(item => {
           if (item.imovel_id) {
             novoMapa[item.imovel_id] = (novoMapa[item.imovel_id] || 0) + 1;
           }
         });
-        
+
         return filtrados.map(item => ({
           ...item,
           totalFavoritos: novoMapa[item.imovel_id] || 1
@@ -110,12 +110,12 @@ export default function FavoritosPage() {
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-zinc-50">
-      <Sidebar />
+    <div className="flex h-screen overflow-hidden bg-zinc-50">
+      <div className="w-64 flex-shrink-0"><Sidebar /></div>
 
       <div className="flex-1 overflow-y-auto">
-        <div className="mx-auto max-w-6xl p-8">
-          
+        <div className="mx-auto max-w-6xl p-6">
+
           <header className="mb-8">
             <div className="flex items-center gap-2 text-[#E09C2D]">
               <Heart className="fill-current" size={24} />
@@ -152,7 +152,7 @@ export default function FavoritosPage() {
                       <th className="px-6 py-4">Imóvel Favoritado</th>
                       <th className="px-6 py-4">Preço / Finalidade</th>
                       <th className="px-6 py-4">Interessado (Cliente)</th>
-                      <th className="px-6 py-4"><span className="flex items-center gap-1"><Calendar size={13}/> Data</span></th>
+                      <th className="px-6 py-4"><span className="flex items-center gap-1"><Calendar size={13} /> Data</span></th>
                       <th className="px-6 py-4 text-right">Ações</th>
                     </tr>
                   </thead>
@@ -177,13 +177,13 @@ export default function FavoritosPage() {
                                 <span className="text-[10px] font-bold text-[#E09C2D] uppercase tracking-wider">
                                   Código: {imovel.codigo || "N/A"}
                                 </span>
-                                
+
                                 {/* Badge de Contagem Real e Precisa baseada no item injetado */}
                                 <span className="bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-0.5">
                                   ★ {fav.totalFavoritos}x salvo
                                 </span>
                               </div>
-                              
+
                               <span className="font-bold text-zinc-900 line-clamp-1 mt-1">
                                 {imovel.titulo}
                               </span>
