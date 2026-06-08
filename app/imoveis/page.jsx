@@ -379,6 +379,7 @@ export default function ImoveisPage() {
     }
   }
 
+  // INICIO DA MUDANÇA  
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
@@ -393,54 +394,75 @@ export default function ImoveisPage() {
         delete payload[item.key];
       });
 
-      const dataToSend = { ...payload, diferenciais: diferenciaisMap };
+      // 1. Upload das imagens direto ao Supabase Storage
+      const imagensUrls = []
+
+      if (files.length > 0) {
+        setMessage('Otimizando e enviando imagens...')
+
+        const options = {
+          maxSizeMB: 1,           // máx 1MB por imagem (qualidade boa)
+          maxWidthOrHeight: 1920, // resolução Full HD
+          useWebWorker: true,
+          initialQuality: 0.85,   // 85% de qualidade — quase imperceptível ao olho
+        }
+
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i]
+          setMessage(`Enviando imagem ${i + 1} de ${files.length}...`)
+
+          let fileToUpload = file
+          if (file.type?.startsWith('image/')) {
+            try {
+              const compressed = await imageCompression(file, options)
+              fileToUpload = new File([compressed], file.name, { type: file.type })
+            } catch {
+              // se falhar a compressão, usa o original
+            }
+          }
+
+          const ext = file.name.split('.').pop()
+          const filePath = `temp/${Date.now()}-${i}.${ext}`
+
+          const { error: uploadError } = await supabase.storage
+            .from('imoveis')
+            .upload(filePath, fileToUpload, { contentType: file.type, upsert: false })
+
+          if (uploadError) throw new Error(`Erro ao enviar imagem ${i + 1}: ${uploadError.message}`)
+
+          const { data: urlData } = supabase.storage.from('imoveis').getPublicUrl(filePath)
+          imagensUrls.push({ path: filePath, url: urlData.publicUrl, ordem: i, capa: i === 0 })
+        }
+      }
+
+      // 2. Envia só os metadados para a API (sem imagens)
+      setMessage('Salvando dados do imóvel...')
+      const dataToSend = {
+        ...payload,
+        diferenciais: diferenciaisMap,
+        imagens: imagensUrls  // envia as URLs prontas
+      }
 
       const body = new FormData()
       body.append('data', JSON.stringify(dataToSend))
 
-      const options = {
-        maxSizeMB: 0.3,
-        maxWidthOrHeight: 1280,
-        useWebWorker: true
-      }
-
-      setMessage('Otimizando imagens para o servidor...')
-
-      for (const file of files) {
-        if (file.type && file.type.startsWith('image/')) {
-          try {
-            const compressedBlob = await imageCompression(file, options);
-            const optimizedFile = new File([compressedBlob], file.name, { type: file.type });
-            body.append('files', optimizedFile);
-          } catch (compError) {
-            console.error("Falha na compressão, enviando arquivo original:", file.name, compError);
-            body.append('files', file);
-          }
-        } else {
-          body.append('files', file);
-        }
-      }
-
-      setMessage('Enviando dados do imóvel...')
-      const method = form.id ? 'PUT' : 'POST';
+      const method = form.id ? 'PUT' : 'POST'
       const response = await fetch('/api/imoveis', { method, body })
 
-      const contentType = response.headers.get("content-type");
-      let result = {};
-      if (contentType && contentType.includes("application/json")) {
-        result = await response.json();
+      const contentType = response.headers.get('content-type')
+      let result = {}
+      if (contentType?.includes('application/json')) {
+        result = await response.json()
       } else {
-        throw new Error(`Servidor rejeitou dados (Status ${response.status}). Imagens muito grandes.`);
+        throw new Error(`Erro inesperado do servidor (Status ${response.status}).`)
       }
 
-      // if (!response.ok) throw new Error(result.error || 'Erro ao processar.')
-
       if (!response.ok) {
-        const msg = result.error || '';
+        const msg = result.error || ''
         if (msg.includes('imoveis_codigo_key')) {
-          throw new Error('Código interno já cadastrado. Use um código diferente.');
+          throw new Error('Código interno já cadastrado. Use um código diferente.')
         }
-        throw new Error(msg || 'Erro ao processar.');
+        throw new Error(msg || 'Erro ao processar.')
       }
 
       setMessage(form.id ? 'Imóvel atualizado!' : 'Imóvel cadastrado!')
@@ -449,11 +471,13 @@ export default function ImoveisPage() {
       setShowForm(false)
       fetchData()
     } catch (error) {
-      setMessage("Erro: " + error.message)
+      setMessage('Erro: ' + error.message)
     } finally {
       setLoading(false)
     }
   }
+
+  // FIM DA MUDANÇA
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50">
