@@ -191,8 +191,7 @@ export async function PUT(request) {
       return Response.json({ error: updateError.message }, { status: 400 });
 
     if (files.length > 0) {
-      // await handleImages(files, id);
-      await handleImagens(imagens, imovel.id);
+      await handleImagens(imagens, id);
     }
 
     return Response.json({ success: true });

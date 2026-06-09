@@ -379,7 +379,6 @@ export default function ImoveisPage() {
     }
   }
 
-  // INICIO DA MUDANÇA  
   async function handleSubmit(e) {
     e.preventDefault()
     setLoading(true)
@@ -394,17 +393,16 @@ export default function ImoveisPage() {
         delete payload[item.key];
       });
 
-      // 1. Upload das imagens direto ao Supabase Storage
       const imagensUrls = []
 
       if (files.length > 0) {
         setMessage('Otimizando e enviando imagens...')
 
         const options = {
-          maxSizeMB: 1,           // máx 1MB por imagem (qualidade boa)
-          maxWidthOrHeight: 1920, // resolução Full HD
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1920,
           useWebWorker: true,
-          initialQuality: 0.85,   // 85% de qualidade — quase imperceptível ao olho
+          initialQuality: 0.85,
         }
 
         for (let i = 0; i < files.length; i++) {
@@ -417,7 +415,7 @@ export default function ImoveisPage() {
               const compressed = await imageCompression(file, options)
               fileToUpload = new File([compressed], file.name, { type: file.type })
             } catch {
-              // se falhar a compressão, usa o original
+
             }
           }
 
@@ -435,12 +433,11 @@ export default function ImoveisPage() {
         }
       }
 
-      // 2. Envia só os metadados para a API (sem imagens)
       setMessage('Salvando dados do imóvel...')
       const dataToSend = {
         ...payload,
         diferenciais: diferenciaisMap,
-        imagens: imagensUrls  // envia as URLs prontas
+        imagens: imagensUrls
       }
 
       const body = new FormData()
@@ -476,8 +473,6 @@ export default function ImoveisPage() {
       setLoading(false)
     }
   }
-
-  // FIM DA MUDANÇA
 
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50">
@@ -618,7 +613,7 @@ export default function ImoveisPage() {
                 </div>
               </section>
 
-              <section className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+              {/* <section className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
                 <h2 className="mb-6 text-lg font-semibold text-zinc-800 border-b pb-2">2. Valores</h2>
                 <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
                   <Field label="Venda (R$)" value={form.preco_venda} onChange={v => setField('preco_venda', v)} placeholder="0,00" />
@@ -626,7 +621,42 @@ export default function ImoveisPage() {
                   <Field label="Condomínio (R$)" value={form.valor_condominio} onChange={v => setField('valor_condominio', v)} placeholder="0,00" />
                   <Field label="IPTU (R$)" value={form.valor_iptu} onChange={v => setField('valor_iptu', v)} placeholder="0,00" />
                 </div>
+              </section> */}
+
+              {/* MUDANÇA NA SEÇÃO DE VALORES */}
+              <section className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
+                <h2 className="mb-6 text-lg font-semibold text-zinc-800 border-b pb-2">2. Valores</h2>
+                <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+
+                  {(form.finalidade === 'venda' || form.finalidade === 'venda_aluguel') && (
+                    <Field
+                      label={form.finalidade === 'venda_aluguel' ? 'Preço de Venda (R$) *' : 'Venda (R$)'}
+                      value={form.preco_venda}
+                      onChange={v => setField('preco_venda', v)}
+                      placeholder="0,00"
+                    />
+                  )}
+
+                  {(form.finalidade === 'aluguel' || form.finalidade === 'venda_aluguel') && (
+                    <Field
+                      label={form.finalidade === 'venda_aluguel' ? 'Preço de Aluguel (R$) *' : 'Aluguel (R$)'}
+                      value={form.preco_aluguel}
+                      onChange={v => setField('preco_aluguel', v)}
+                      placeholder="0,00"
+                    />
+                  )}
+
+                  <Field label="Condomínio (R$)" value={form.valor_condominio} onChange={v => setField('valor_condominio', v)} placeholder="0,00" />
+                  <Field label="IPTU (R$)" value={form.valor_iptu} onChange={v => setField('valor_iptu', v)} placeholder="0,00" />
+                </div>
+
+                {form.finalidade === 'venda_aluguel' && (
+                  <p className="mt-4 text-xs text-amber-600 font-medium bg-amber-50 border border-amber-100 rounded-lg px-4 py-2">
+                    Preencha os dois preços — o imóvel será anunciado para venda e locação simultaneamente.
+                  </p>
+                )}
               </section>
+              {/* MUDANÇA NA SEÇÃO DE VALORES */}
 
               <section className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm">
                 <h2 className="mb-6 text-lg font-semibold text-zinc-800 border-b pb-2">3. Localização</h2>
@@ -737,7 +767,6 @@ function Field({ label, value, onChange, required = false, placeholder = "" }) {
     </div>
   )
 }
-
 function Stepper({ label, value, onChange }) {
   return (
     <div className="flex flex-col">
