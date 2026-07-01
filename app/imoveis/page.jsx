@@ -509,6 +509,9 @@ export default function ImoveisPage() {
   const [form, setForm] = useState(initialState)
   const [corretores, setCorretores] = useState([])
   const [files, setFiles] = useState([])
+  const [previews, setPreviews] = useState([])
+  const [existingImages, setExistingImages] = useState([])
+  const [imagesToDelete, setImagesToDelete] = useState([])
   const [loading, setLoading] = useState(false)
   const [message, setMessage] = useState('')
   const [showForm, setShowForm] = useState(false)
@@ -525,6 +528,13 @@ export default function ImoveisPage() {
     }
   }, [message])
 
+  // Gera e limpa previews locais das novas fotos selecionadas
+  useEffect(() => {
+    const urls = files.map(f => URL.createObjectURL(f))
+    setPreviews(urls)
+    return () => urls.forEach(u => URL.revokeObjectURL(u))
+  }, [files])
+
   async function fetchData() {
     try {
       const { data: imvs, error: imvsError } = await supabase
@@ -536,6 +546,12 @@ export default function ImoveisPage() {
             nome,
             email,
             telefone
+          ),
+          imovel_imagens (
+            id,
+            url,
+            ordem,
+            capa
           )
         `)
         .order('created_at', { ascending: false })
@@ -567,13 +583,31 @@ export default function ImoveisPage() {
     );
   }, [form.tipo]);
 
+  const resetFormState = () => {
+    setForm(initialState);
+    setFiles([]);
+    setExistingImages([]);
+    setImagesToDelete([]);
+  }
+
   const handleEdit = (imovel) => {
     const flatDifs = imovel.diferenciais || {};
     setForm({ ...initialState, ...imovel, ...flatDifs });
     setMessage('');
     setFiles([]);
+    setExistingImages((imovel.imovel_imagens || []).slice().sort((a, b) => a.ordem - b.ordem));
+    setImagesToDelete([]);
     setShowForm(true);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  const removeExistingImage = (id) => {
+    setExistingImages(prev => prev.filter(img => img.id !== id));
+    setImagesToDelete(prev => [...prev, id]);
+  }
+
+  const removeNewFile = (index) => {
+    setFiles(prev => prev.filter((_, i) => i !== index));
   }
 
   async function handleToggleStatus(id, currentStatus) {
@@ -689,7 +723,9 @@ export default function ImoveisPage() {
           }
 
           const { data: urlData } = supabase.storage.from('imoveis').getPublicUrl(filePath)
-          imagensUrls.push({ path: filePath, url: urlData.publicUrl, ordem: i, capa: i === 0 })
+          // A ordem das novas fotos continua a partir das que já existiam e não foram removidas
+          const ordemBase = existingImages.length
+          imagensUrls.push({ path: filePath, url: urlData.publicUrl, ordem: ordemBase + i, capa: existingImages.length === 0 && i === 0 })
         }
       }
 
@@ -697,7 +733,8 @@ export default function ImoveisPage() {
       const dataToSend = {
         ...payload,
         diferenciais: diferenciaisMap,
-        imagens: imagensUrls
+        imagens: imagensUrls,
+        imagens_remover: imagesToDelete,
       }
 
       const body = new FormData()
@@ -730,8 +767,7 @@ export default function ImoveisPage() {
         setMessage(form.id ? '✓ Imóvel atualizado com sucesso!' : '✓ Imóvel publicado com sucesso!')
       }
 
-      setForm(initialState)
-      setFiles([])
+      resetFormState()
       setShowForm(false)
       fetchData()
     } catch (error) {
@@ -757,7 +793,7 @@ export default function ImoveisPage() {
               <p className="text-zinc-500">Administre os anúncios e disponibilidade do portal.</p>
             </div>
             <button
-              onClick={() => { setShowForm(!showForm); setForm(initialState); setFiles([]); setMessage(''); }}
+              onClick={() => { setShowForm(!showForm); resetFormState(); setMessage(''); }}
               className={`rounded-xl px-6 py-3 text-sm font-semibold shadow-sm transition ${showForm ? 'bg-white border border-zinc-300 text-zinc-600' : 'bg-zinc-900 text-white hover:bg-zinc-800'}`}
             >
               {showForm ? 'Voltar para Lista' : '+ Novo Imóvel'}
@@ -983,13 +1019,53 @@ export default function ImoveisPage() {
                   </label>
 
                   <div className="group relative flex min-h-[120px] cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-300 bg-zinc-50 transition hover:bg-zinc-100">
-                    <input type="file" multiple accept="image/*" className="absolute inset-0 cursor-pointer opacity-0" onChange={e => setFiles(Array.from(e.target.files || []))} />
+                    <input type="file" multiple accept="image/*" className="absolute inset-0 cursor-pointer opacity-0" onChange={e => setFiles(prev => [...prev, ...Array.from(e.target.files || [])])} />
                     <p className="text-sm font-bold text-zinc-900">Adicionar Fotos</p>
                     <p className="text-xs text-zinc-500">Arraste ou clique para selecionar</p>
                   </div>
-                  {files.length > 0 && (
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 italic text-[10px] text-zinc-500">
-                      {files.map((f, i) => <div key={i} className="truncate bg-zinc-100 p-1 rounded">● {f.name}</div>)}
+
+                  {(existingImages.length > 0 || files.length > 0) && (
+                    <div>
+                      <p className="mb-3 text-xs font-bold uppercase tracking-wide text-zinc-400">
+                        Fotos do imóvel ({existingImages.length + files.length})
+                      </p>
+                      <div className="grid grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6">
+                        {existingImages.map(img => (
+                          <div key={img.id} className="group relative aspect-square overflow-hidden rounded-xl border border-zinc-200 bg-zinc-100">
+                            <img src={img.url} alt="" className="h-full w-full object-cover" />
+                            {img.capa && (
+                              <span className="absolute bottom-1 left-1 rounded bg-zinc-900/80 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                                CAPA
+                              </span>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeExistingImage(img.id)}
+                              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white text-xs font-bold leading-none hover:bg-red-600 transition"
+                              title="Remover foto"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+
+                        {files.map((f, i) => (
+                          <div key={`new-${i}-${f.name}`} className="group relative aspect-square overflow-hidden rounded-xl border-2 border-dashed border-emerald-300 bg-zinc-100">
+                            {previews[i] && <img src={previews[i]} alt="" className="h-full w-full object-cover" />}
+                            <span className="absolute bottom-1 left-1 rounded bg-emerald-600/90 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                              NOVA
+                            </span>
+                            <button
+                              type="button"
+                              onClick={() => removeNewFile(i)}
+                              className="absolute right-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/60 text-white text-xs font-bold leading-none hover:bg-red-600 transition"
+                              title="Remover"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>

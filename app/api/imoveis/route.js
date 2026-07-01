@@ -74,6 +74,46 @@ async function handleImages(imagens, imovelId) {
   }
 }
 
+async function handleImageDeletions(ids) {
+  if (!ids || ids.length === 0) return;
+
+  const { data: rows, error: fetchError } = await supabase
+    .from("imovel_imagens")
+    .select("id, url")
+    .in("id", ids);
+
+  if (fetchError) {
+    throw new Error(`Erro ao buscar imagens para remoção: ${fetchError.message}`);
+  }
+
+  const marker = "/object/public/imoveis/";
+  const paths = (rows || [])
+    .map((row) => {
+      const idx = row.url.indexOf(marker);
+      return idx !== -1 ? row.url.slice(idx + marker.length) : null;
+    })
+    .filter(Boolean);
+
+  if (paths.length > 0) {
+    const { error: removeError } = await supabase.storage
+      .from("imoveis")
+      .remove(paths);
+
+    if (removeError) {
+      throw new Error(`Erro ao remover arquivos do armazenamento: ${removeError.message}`);
+    }
+  }
+
+  const { error: deleteError } = await supabase
+    .from("imovel_imagens")
+    .delete()
+    .in("id", ids);
+
+  if (deleteError) {
+    throw new Error(`Erro ao remover registros de imagens: ${deleteError.message}`);
+  }
+}
+
 function buildPayload(raw) {
   return {
     codigo: (raw.codigo || "").trim(),
@@ -244,13 +284,30 @@ export async function PUT(request) {
       );
     }
 
-    const imagens = raw.imagens || [];
-    if (!isQuickStatusUpdate && imagens.length > 0) {
-      try {
-        await handleImages(imagens, id);
-      } catch (imgError) {
+    if (!isQuickStatusUpdate) {
+      const imagens = raw.imagens || [];
+      const imagensRemover = raw.imagens_remover || [];
+      const warnings = [];
+
+      if (imagensRemover.length > 0) {
+        try {
+          await handleImageDeletions(imagensRemover);
+        } catch (delError) {
+          warnings.push(delError.message);
+        }
+      }
+
+      if (imagens.length > 0) {
+        try {
+          await handleImages(imagens, id);
+        } catch (imgError) {
+          warnings.push(imgError.message);
+        }
+      }
+
+      if (warnings.length > 0) {
         return Response.json(
-          { success: true, warning: imgError.message },
+          { success: true, warning: warnings.join(" | ") },
           { status: 207 }
         );
       }
