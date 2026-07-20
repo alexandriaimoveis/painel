@@ -517,6 +517,27 @@ export default function ImoveisPage() {
   const [showForm, setShowForm] = useState(false)
   const [togglingId, setTogglingId] = useState(null)
 
+  const gerarCodigoAlfanumerico = (tipoImovel) => {
+    const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let sufixo = "";
+    for (let i = 0; i < 6; i++) {
+      sufixo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+
+    let prefixo = "IM";
+    if (tipoImovel === "Apartamento") prefixo = "AP";
+    if (tipoImovel === "Casa") prefixo = "CA";
+    if (tipoImovel === "Terreno") prefixo = "TE";
+    if (tipoImovel === "Comercial") prefixo = "CM";
+
+    return `${prefixo}${sufixo}`;
+  };
+
+  useEffect(() => {
+    const novoCodigo = gerarCodigoAlfanumerico(form.tipo);
+    setField('codigo', novoCodigo);
+  }, [form.tipo]);
+
   useEffect(() => {
     fetchData()
   }, [])
@@ -528,7 +549,6 @@ export default function ImoveisPage() {
     }
   }, [message])
 
-  // Gera e limpa previews locais das novas fotos selecionadas
   useEffect(() => {
     const urls = files.map(f => URL.createObjectURL(f))
     setPreviews(urls)
@@ -723,7 +743,6 @@ export default function ImoveisPage() {
           }
 
           const { data: urlData } = supabase.storage.from('imoveis').getPublicUrl(filePath)
-          // A ordem das novas fotos continua a partir das que já existiam e não foram removidas
           const ordemBase = existingImages.length
           imagensUrls.push({ path: filePath, url: urlData.publicUrl, ordem: ordemBase + i, capa: existingImages.length === 0 && i === 0 })
         }
@@ -885,11 +904,20 @@ export default function ImoveisPage() {
                     />
                   </div>
                 </div>
+
                 <div className="grid gap-6 md:grid-cols-2">
                   <div className="md:col-span-2">
                     <Field label="Título do Anúncio *" value={form.titulo} onChange={v => setField('titulo', v)} required placeholder="Ex: Apartamento decorado no Centro" />
                   </div>
-                  <Field label="Código Interno *" value={form.codigo} onChange={v => setField('codigo', v)} required placeholder="Ex: AP001" />
+
+                  <Field
+                    label="Código Interno *"
+                    value={form.codigo || ''}
+                    onChange={v => setField('codigo', v)}
+                    required
+                    readOnly
+                    placeholder="Gerando código..."
+                  />
 
                   <div>
                     <label className="mb-2 block text-sm font-bold text-zinc-700">Corretor Responsável</label>
