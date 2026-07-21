@@ -12,8 +12,6 @@ export default function Dashboard() {
     corretores: 0
   })
   const [loading, setLoading] = useState(true)
-  
-  // Estados para a busca por ID / Código
   const [searchQuery, setSearchQuery] = useState('')
   const [searchLoading, setSearchLoading] = useState(false)
   const [searchError, setSearchError] = useState('')
@@ -42,7 +40,6 @@ export default function Dashboard() {
     getStats()
   }, [])
 
-  // Função para buscar o imóvel e redirecionar o corretor
   const handleSearch = async (e) => {
     e.preventDefault()
     if (!searchQuery.trim()) return
@@ -53,7 +50,6 @@ export default function Dashboard() {
     try {
       let query = supabase.from('imoveis').select('id')
 
-      // Se for apenas números, busca pelo ID primário. Caso contrário, busca pelo Código Interno.
       if (/^\d+$/.test(searchQuery.trim())) {
         query = query.eq('id', parseInt(searchQuery.trim()))
       } else {
@@ -65,7 +61,6 @@ export default function Dashboard() {
       if (error) throw error
 
       if (data) {
-        // ✅ Corrigido para a pasta correta da sua árvore: app/imoveis/[id]
         router.push(`/imoveis/${data.id}`)
       } else {
         setSearchError('Imóvel não encontrado.')
@@ -83,14 +78,12 @@ export default function Dashboard() {
       <div className="flex-1 overflow-y-auto">
         <div className="mx-auto max-w-6xl p-6">
 
-          {/* Header com Grid */}
           <header className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-6 border-b border-zinc-100 pb-6">
             <div>
               <h1 className="text-4xl font-extrabold text-zinc-900 tracking-tight">Bem-vindo ao Portal</h1>
               <p className="text-zinc-500 mt-2 text-lg">Aqui está o resumo da sua imobiliária hoje.</p>
             </div>
 
-            {/* 🔍 CAMPO DE BUSCA COM LABEL ADICIONADO */}
             <div className="w-full md:w-80 flex flex-col gap-1.5">
               <label className="text-xs font-bold text-zinc-400 uppercase tracking-wider ml-1">
                 Busque pelo imóvel

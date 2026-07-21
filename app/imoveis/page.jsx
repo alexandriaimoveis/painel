@@ -466,6 +466,47 @@ const MAPA_VISIBILIDADE = {
 
 const DIFERENCIAIS_GERAIS = ['internet', 'ar_condicionado', 'mobiliado', 'dep_empregados'];
 
+const PREFIXO_TIPO = {
+  casa: 'CA',
+  apartamento: 'AP',
+  cobertura: 'CB',
+  terreno: 'TE',
+  chacara: 'CH',
+  sitio: 'ST',
+  comercial: 'CM',
+  galpao: 'GL',
+  loja: 'LJ',
+  sala: 'SA',
+};
+
+async function gerarCodigoUnico(tipoImovel) {
+  const caracteres = "0123456789";
+  const prefixo = PREFIXO_TIPO[tipoImovel] || 'IM';
+
+  const MAX_TENTATIVAS = 15;
+  for (let tentativa = 0; tentativa < MAX_TENTATIVAS; tentativa++) {
+    let sufixo = "";
+    for (let i = 0; i < 6; i++) {
+      sufixo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
+    }
+    const codigo = `${prefixo}${sufixo}`;
+
+    const { data, error } = await supabase
+      .from('imoveis')
+      .select('id')
+      .eq('codigo', codigo)
+      .maybeSingle();
+
+    if (error) {
+      console.warn('Não foi possível verificar duplicidade de código:', error.message);
+      return codigo;
+    }
+    if (!data) return codigo;
+  }
+
+  return `${prefixo}${Date.now().toString(36).toUpperCase().slice(-6)}`;
+}
+
 const baseState = {
   id: null,
   codigo: '',
@@ -517,25 +558,17 @@ export default function ImoveisPage() {
   const [showForm, setShowForm] = useState(false)
   const [togglingId, setTogglingId] = useState(null)
 
-  const gerarCodigoAlfanumerico = (tipoImovel) => {
-    const caracteres = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let sufixo = "";
-    for (let i = 0; i < 6; i++) {
-      sufixo += caracteres.charAt(Math.floor(Math.random() * caracteres.length));
-    }
-
-    let prefixo = "IM";
-    if (tipoImovel === "Apartamento") prefixo = "AP";
-    if (tipoImovel === "Casa") prefixo = "CA";
-    if (tipoImovel === "Terreno") prefixo = "TE";
-    if (tipoImovel === "Comercial") prefixo = "CM";
-
-    return `${prefixo}${sufixo}`;
-  };
-
   useEffect(() => {
-    const novoCodigo = gerarCodigoAlfanumerico(form.tipo);
-    setField('codigo', novoCodigo);
+    if (!form.tipo || form.id) return;
+
+    let cancelado = false;
+
+    (async () => {
+      const novoCodigo = await gerarCodigoUnico(form.tipo);
+      if (!cancelado) setField('codigo', novoCodigo);
+    })();
+
+    return () => { cancelado = true; };
   }, [form.tipo]);
 
   useEffect(() => {
