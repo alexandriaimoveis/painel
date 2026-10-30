@@ -61,7 +61,7 @@ export default function Dashboard() {
       if (error) throw error
 
       if (data) {
-        router.push(`/imoveis/${data.id}`)
+        router.push(`/imoveis?editar=${data.id}`)
       } else {
         setSearchError('Imóvel não encontrado.')
       }

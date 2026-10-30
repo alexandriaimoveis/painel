@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
+import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase/client'
 import Sidebar from "../components/sidebar/page";
 import { User } from 'lucide-react';
@@ -546,6 +547,8 @@ const difState = LISTA_DIFERENCIAIS.reduce((acc, item) => {
 const initialState = { ...baseState, ...difState };
 
 export default function ImoveisPage() {
+  const searchParams = useSearchParams()
+  const router = useRouter()
   const [imoveis, setImoveis] = useState([])
   const [form, setForm] = useState(initialState)
   const [corretores, setCorretores] = useState([])
@@ -574,6 +577,26 @@ export default function ImoveisPage() {
   useEffect(() => {
     fetchData()
   }, [])
+
+  useEffect(() => {
+    const editarId = searchParams.get('editar')
+    if (!editarId) return
+
+    async function abrirEdicao() {
+      const { data, error } = await supabase
+        .from('imoveis')
+        .select(`*, imovel_imagens (id, url, ordem, capa)`)
+        .eq('id', editarId)
+        .single()
+
+      if (error || !data) return
+
+      handleEdit(data)
+      router.replace('/imoveis')
+    }
+
+    abrirEdicao()
+  }, [searchParams])
 
   useEffect(() => {
     if (message && !message.startsWith('Erro:') && !message.startsWith('Aviso:') && !message.startsWith('Enviando') && !message.startsWith('Otimizando') && !message.startsWith('Salvando')) {
