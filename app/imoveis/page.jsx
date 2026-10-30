@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState, Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { supabase } from '../lib/supabase/client'
 import Sidebar from "../components/sidebar/page";
@@ -547,8 +547,6 @@ const difState = LISTA_DIFERENCIAIS.reduce((acc, item) => {
 const initialState = { ...baseState, ...difState };
 
 export default function ImoveisPage() {
-  const searchParams = useSearchParams()
-  const router = useRouter()
   const [imoveis, setImoveis] = useState([])
   const [form, setForm] = useState(initialState)
   const [corretores, setCorretores] = useState([])
@@ -577,26 +575,6 @@ export default function ImoveisPage() {
   useEffect(() => {
     fetchData()
   }, [])
-
-  useEffect(() => {
-    const editarId = searchParams.get('editar')
-    if (!editarId) return
-
-    async function abrirEdicao() {
-      const { data, error } = await supabase
-        .from('imoveis')
-        .select(`*, imovel_imagens (id, url, ordem, capa)`)
-        .eq('id', editarId)
-        .single()
-
-      if (error || !data) return
-
-      handleEdit(data)
-      router.replace('/imoveis')
-    }
-
-    abrirEdicao()
-  }, [searchParams])
 
   useEffect(() => {
     if (message && !message.startsWith('Erro:') && !message.startsWith('Aviso:') && !message.startsWith('Enviando') && !message.startsWith('Otimizando') && !message.startsWith('Salvando')) {
@@ -853,8 +831,21 @@ export default function ImoveisPage() {
     }
   }
 
+  const handleEditarPorId = async (id) => {
+    const { data, error } = await supabase
+      .from('imoveis')
+      .select(`*, imovel_imagens (id, url, ordem, capa)`)
+      .eq('id', id)
+      .single()
+    if (error || !data) return
+    handleEdit(data)
+  }
+
   return (
     <div className="flex h-screen overflow-hidden bg-zinc-50">
+      <Suspense>
+        <EditarPorQuery onEditar={handleEditarPorId} />
+      </Suspense>
       <div className="w-64 flex-shrink-0"><Sidebar /></div>
 
       <div className="flex-1 overflow-y-auto">
@@ -1182,6 +1173,20 @@ function Field({ label, value, onChange, required = false, placeholder = "" }) {
       />
     </div>
   )
+}
+
+function EditarPorQuery({ onEditar }) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    const editarId = searchParams.get('editar')
+    if (!editarId) return
+    onEditar(editarId)
+    router.replace('/imoveis')
+  }, [searchParams])
+
+  return null
 }
 
 function Stepper({ label, value, onChange }) {
